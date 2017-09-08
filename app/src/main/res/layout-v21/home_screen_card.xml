@@ -40,27 +40,53 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp">
-            <android.support.v7.widget.AppCompatButton
+            android:padding="10dp">
+            <android.support.v7.widget.LinearLayoutCompat
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_weight="1"
-                android:drawableStart="@drawable/ic_favorite_black_24dp"
-                android:text="like"
-                android:background="@android:color/transparent"/>
+                android:onClick="LikeClicked"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_favorite_black_24dp" />
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-            <android.support.v7.widget.AppCompatButton
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:textSize="17sp"
+                    android:text="LIKE" />
+            </android.support.v7.widget.LinearLayoutCompat>
+            <android.support.v7.widget.LinearLayoutCompat
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:layout_weight="1"
-                android:drawableStart="@drawable/ic_share_black_24dp"
-                android:text="share"
-                android:background="@android:color/transparent"/>
+                android:onClick="ShareClicked"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_share_black_24dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:textSize="17sp"
+                    android:text="SHARE" />
+            </android.support.v7.widget.LinearLayoutCompat>
 
 
         </LinearLayout>

@@ -124,7 +124,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         tools:layout_constraintLeft_creator="1"
-        android:layout_marginBottom="76dp"
+        android:layout_marginBottom="80dp"
         app:layout_constraintLeft_toLeftOf="parent" />
 
 

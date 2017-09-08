@@ -82,4 +82,12 @@ public class HomeScreen extends AppCompatActivity implements OnFragmentInteracti
         transaction.replace(R.id.content, selectedFragment);
         transaction.commit();
     }
+
+    public void LikeClicked(View view) {
+        Toast.makeText(this, "Like Clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    public void ShareClicked(View view) {
+        Toast.makeText(this, "Share Clicked", Toast.LENGTH_SHORT).show();
+    }
 }
