@@ -111,7 +111,7 @@
 
 
     <android.support.v7.widget.AppCompatEditText
-        android:id="@+id/appCompatEditText8"
+        android:id="@+id/dateofBirth"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:inputType="date"
@@ -133,11 +133,11 @@
         android:id="@+id/spinner"
         tools:layout_constraintTop_creator="1"
         tools:layout_constraintRight_creator="1"
-        app:layout_constraintRight_toRightOf="@+id/appCompatEditText8"
+        app:layout_constraintRight_toRightOf="@+id/dateofBirth"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/appCompatEditText8"
+        app:layout_constraintTop_toBottomOf="@+id/dateofBirth"
         tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="@+id/appCompatEditText8"
+        app:layout_constraintLeft_toLeftOf="@+id/dateofBirth"
         app:layout_constraintHorizontal_bias="0.0" />
 
     <android.support.v7.widget.AppCompatButton
