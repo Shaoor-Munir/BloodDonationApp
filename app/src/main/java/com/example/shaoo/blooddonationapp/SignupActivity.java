@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -12,8 +13,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +27,7 @@ public class SignupActivity extends AppCompatActivity {
      private EditText ContactNumber;
      private EditText EmailAddress;
      private EditText UserDescription;
-     private EditText Date;
+     private EditText Date1;
      private Spinner Gender;
      private Button RegisterButton;
 
@@ -41,6 +44,9 @@ public class SignupActivity extends AppCompatActivity {
 
 
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +57,7 @@ public class SignupActivity extends AppCompatActivity {
         ContactNumber = (EditText) findViewById(R.id.appCompatEditText4);
         EmailAddress = (EditText) findViewById(R.id.appCompatEditText5);
         UserDescription = (EditText) findViewById(R.id.appCompatEditText6);
-        Date = (EditText) findViewById(R.id.dateofBirth);
+        Date1 = (EditText) findViewById(R.id.dateofBirth);
         Gender = (Spinner) findViewById(R.id.spinner);
         RegisterButton = (Button) findViewById(R.id.appCompatButton2);
         // Session manager
@@ -81,7 +87,7 @@ public class SignupActivity extends AppCompatActivity {
                  ContactInput = ContactNumber.getText().toString().trim();
                  EmailInput = EmailAddress.getText().toString().trim();
                  UserDescriptionInput = UserDescription.getText().toString().trim();
-                 DateInput = Date.getText().toString().trim();
+                 DateInput = Date1.getText().toString().trim();
                  GenderInput = Gender.getSelectedItem().toString().trim();
                  // checking if some field is emptyy or not
                  // if yes then display the toast and return to app
@@ -102,21 +108,44 @@ public class SignupActivity extends AppCompatActivity {
                  // Checking if the information typed by the user is above age 18
                  // by subtracting the current date from the date of birth entered by the user
                  // utility function is at the end of the file
-                 
+
+                 String currentDate = getDateTime();
+
+                 try {
+                     //Dates to compare
+                     //String CurrentDate=  "09/24/2015";
+                     //String FinalDate=  "09/26/2015";
+
+                     Date date1;
+                     Date date2;
+
+                     SimpleDateFormat dates = new SimpleDateFormat("dd-MM-yyyy");
+
+                     //Setting dates
+                     date1 = dates.parse(currentDate);
+                     date2 = dates.parse(DateInput);
+
+                     //Comparing dates
+                     long difference = Math.abs(date1.getTime() - date2.getTime());
+                     long differenceDates = difference / (24 * 60 * 60 * 1000);
+
+                     //Convert long to String
+                     String dayDifference = Long.toString(differenceDates);
+                     if(Integer.parseInt(dayDifference) < 18) {
+                         Toast.makeText(getApplicationContext(), "For Signup you should be above 18", Toast.LENGTH_LONG).show();
+                         return;
+                     }
+
+
+
+                 } catch (Exception exception) {
+                     Log.e("DIDN'T WORK", "exception " + exception);
+                 }
+
+
+
              }
          });
-
-
-
-
-
-
-
-
-
-
-
-
 
         final Calendar c = Calendar.getInstance();
         final int mYear = c.get(Calendar.YEAR);
@@ -155,6 +184,12 @@ public class SignupActivity extends AppCompatActivity {
         Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
+    }
+
+    private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 
 
