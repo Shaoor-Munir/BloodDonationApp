@@ -1,6 +1,8 @@
 package com.example.shaoo.blooddonationapp;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +15,19 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -20,9 +35,23 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+
 public class SignupActivity extends AppCompatActivity {
 
-     private EditText Name;
+
+    public static final String NO_REST = "MY";
+
+    private JSONObject obj;
+    private String  status;
+
+
+
+
+    private EditText Name;
      private EditText Password;
      private EditText ContactNumber;
      private EditText EmailAddress;
@@ -38,12 +67,12 @@ public class SignupActivity extends AppCompatActivity {
      private String UserDescriptionInput;
      private String DateInput;
      private String GenderInput;
+     private String result1;
 
      private SessionManager session;
      private SQLiteHandlerClass db;
 
-
-
+     private CellnoAndMailVerify ClassContainingUrls;
 
 
 
@@ -51,6 +80,8 @@ public class SignupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+
+        ClassContainingUrls = new CellnoAndMailVerify();
 
         Name = (EditText) findViewById(R.id.appCompatEditText2);
         Password = (EditText) findViewById(R.id.appCompatEditText3);
@@ -65,6 +96,15 @@ public class SignupActivity extends AppCompatActivity {
 
         // SQLite database handler
         db = new SQLiteHandlerClass(getApplicationContext());
+
+        // Check if user is already logged in or not
+        if (session.isLoggedIn()) {
+            // User is already logged in. Take him to main activity
+            Intent intent = new Intent(SignupActivity.this,
+                    HomeScreen.class);
+            startActivity(intent);
+            finish();
+        }
 
 
 
@@ -89,13 +129,13 @@ public class SignupActivity extends AppCompatActivity {
                  UserDescriptionInput = UserDescription.getText().toString().trim();
                  DateInput = Date1.getText().toString().trim();
                  GenderInput = Gender.getSelectedItem().toString().trim();
-                 // checking if some field is emptyy or not
+                 // checking if some field is empty or not
                  // if yes then display the toast and return to app
                  if(NameInput.matches("") || PasswordInput.matches("")
                          || ContactInput.matches("") ||
                          EmailInput.matches("") || UserDescriptionInput.matches("")
                          || DateInput.matches("")) {
-                     Toast.makeText(getApplicationContext(), "SomeFieldsMissing", Toast.LENGTH_LONG).show();
+                     Toast.makeText(getApplicationContext(), "Please Enter your Details", Toast.LENGTH_LONG).show();
                      return;
                  }
                  //Prompting the user to enter the correct email
@@ -112,9 +152,6 @@ public class SignupActivity extends AppCompatActivity {
                  String currentDate = getDateTime();
 
                  try {
-                     //Dates to compare
-                     //String CurrentDate=  "09/24/2015";
-                     //String FinalDate=  "09/26/2015";
 
                      Date date1;
                      Date date2;
@@ -131,19 +168,76 @@ public class SignupActivity extends AppCompatActivity {
 
                      //Convert long to String
                      String dayDifference = Long.toString(differenceDates);
-                     if(Integer.parseInt(dayDifference) < 18) {
+                     if(Integer.parseInt(dayDifference) < 2) {
                          Toast.makeText(getApplicationContext(), "For Signup you should be above 18", Toast.LENGTH_LONG).show();
                          return;
                      }
-
-
 
                  } catch (Exception exception) {
                      Log.e("DIDN'T WORK", "exception " + exception);
                  }
 
 
+                 Log.i(NO_REST,"came out");
 
+
+
+
+
+                 Thread thread = new Thread(new Runnable() {
+
+                     @Override
+                     public void run() {
+                         String line = "";
+
+                         try{
+
+
+                             URL url = new URL(ClassContainingUrls.getEmailURL());
+                             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                             connection.setReadTimeout(10000);
+                             connection.setConnectTimeout(15000);
+                             connection.setRequestMethod("GET");
+                             connection.setDoInput(true);
+
+                             connection.connect();
+
+                             StringBuilder content = new StringBuilder();
+                             BufferedReader reader = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );
+
+
+                             while( (line = reader.readLine()) != null ){
+                                 content.append(line);
+                             }
+                             line = content.toString();
+                             result1 = line;
+                         } catch(Exception ex) {
+                             line = ex.getMessage();
+                             ex.printStackTrace();
+                         }
+
+                     }
+                 });
+
+                thread.start();
+
+
+                 Log.i(NO_REST,result1);
+
+
+
+                 //    try {
+               //      obj = new JSONObject(result1);
+                 //} catch (JSONException e) {
+                   //  e.printStackTrace();
+                 //}
+
+                 //try {
+                   //  status = obj.getString("STATUS");
+                 //} catch (JSONException e) {
+                   //  e.printStackTrace();
+                // }
+                 //Log.i(NO_REST,status);
              }
          });
 
@@ -178,23 +272,45 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
     }
-
     public static boolean isEmailValid(String email) {
         String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
         Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
-
     private String getDateTime() {
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date date = new Date();
         return dateFormat.format(date);
     }
+    private void load(){
+
+        String line = "";
+
+        try{
+
+            URL url = new URL(ClassContainingUrls.getEmailURL());
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+            connection.setRequestMethod("GET");
+            connection.setDoInput(true);
+
+            connection.connect();
+
+            StringBuilder content = new StringBuilder();
+            BufferedReader reader = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );
 
 
+            while( (line = reader.readLine()) != null ){
+                content.append(line);
+            }
+            line = content.toString();
+        } catch(Exception ex) {
+            line = ex.getMessage();
+            ex.printStackTrace();
+        }
 
-
-
-
+        result1 = line;
+    }
 }
