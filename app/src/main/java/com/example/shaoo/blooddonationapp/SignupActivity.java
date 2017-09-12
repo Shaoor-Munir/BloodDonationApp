@@ -1,8 +1,10 @@
 package com.example.shaoo.blooddonationapp;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +17,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import org.apache.http.NameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,8 +34,10 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,6 +53,9 @@ public class SignupActivity extends AppCompatActivity {
 
     private JSONObject obj;
     private String  status;
+    private ProgressDialog pDialog;
+    private JSONParser jsonParser=new JSONParser();
+
 
 
 
@@ -180,49 +189,52 @@ public class SignupActivity extends AppCompatActivity {
 
                  Log.i(NO_REST,"came out");
 
+                 new CheckEmail().execute();
 
 
 
 
-                 Thread thread = new Thread(new Runnable() {
-
-                     @Override
-                     public void run() {
-                         String line = "";
-
-                         try{
 
 
-                             URL url = new URL(ClassContainingUrls.getEmailURL());
-                             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                             connection.setReadTimeout(10000);
-                             connection.setConnectTimeout(15000);
-                             connection.setRequestMethod("GET");
-                             connection.setDoInput(true);
+//                 Thread thread = new Thread(new Runnable() {
+//
+//                     @Override
+//                     public void run() {
+//                         String line = "";
+//
+//                         try{
+//
+//
+//                             URL url = new URL(ClassContainingUrls.getEmailURL());
+//                             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//                             connection.setReadTimeout(10000);
+//                             connection.setConnectTimeout(15000);
+//                             connection.setRequestMethod("GET");
+//                             connection.setDoInput(true);
+//
+//                             connection.connect();
+//
+//                             StringBuilder content = new StringBuilder();
+//                             BufferedReader reader = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );
+//
+//
+//                             while( (line = reader.readLine()) != null ){
+//                                 content.append(line);
+//                             }
+//                             line = content.toString();
+//                             result1 = line;
+//                         } catch(Exception ex) {
+//                             line = ex.getMessage();
+//                             ex.printStackTrace();
+//                         }
+//
+//                     }
+//                 });
+//
+//                thread.start();
 
-                             connection.connect();
 
-                             StringBuilder content = new StringBuilder();
-                             BufferedReader reader = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );
-
-
-                             while( (line = reader.readLine()) != null ){
-                                 content.append(line);
-                             }
-                             line = content.toString();
-                             result1 = line;
-                         } catch(Exception ex) {
-                             line = ex.getMessage();
-                             ex.printStackTrace();
-                         }
-
-                     }
-                 });
-
-                thread.start();
-
-
-                 Log.i(NO_REST,result1);
+//                 Log.i(NO_REST,result1);
 
 
 
@@ -312,5 +324,63 @@ public class SignupActivity extends AppCompatActivity {
         }
 
         result1 = line;
+    }
+    class CheckEmail extends AsyncTask<String, String, String> {
+
+        String error=null;
+        String status;
+        /**
+         * Before starting background thread Show Progress Dialog
+         * */
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(SignupActivity.this);
+            pDialog.setMessage("Checking from server...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+        }
+
+        /**
+         * Creating product
+         * */
+        protected String doInBackground(String... args) {
+            // Building Parameters
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            // getting JSON Object
+            // Note that create product url accepts POST method
+
+            JSONObject json = jsonParser.makeHttpRequest(ClassContainingUrls.getEmailURL()+EmailInput,
+                    "POST", params);
+            // checking for success tag
+            try {
+                if (json!=null) {
+
+                    status = json.getString("STATUS");
+                    //status= String.valueOf(statusObj);
+                }
+                else {
+                    error="Please Connect Internet !";
+                }
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        /**
+         * After completing background task Dismiss the progress dialog
+         * **/
+        protected void onPostExecute(String file_url) {
+            // dismiss the dialog once done
+            pDialog.dismiss();
+            Toast.makeText(SignupActivity.this, status,Toast.LENGTH_LONG).show();
+
+
+        }
+
     }
 }
