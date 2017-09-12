@@ -56,11 +56,15 @@ public class SignupActivity extends AppCompatActivity {
     private ProgressDialog pDialog;
     private JSONParser jsonParser=new JSONParser();
 
+    private String NumberResult;
+    private String EmailResult;
 
 
 
 
-    private EditText Name;
+
+
+     private EditText Name;
      private EditText Password;
      private EditText ContactNumber;
      private EditText EmailAddress;
@@ -77,6 +81,9 @@ public class SignupActivity extends AppCompatActivity {
      private String DateInput;
      private String GenderInput;
      private String result1;
+     CheckEmail check1;
+     CheckNumber check2;
+     private SignUpdata sigupData;
 
      private SessionManager session;
      private SQLiteHandlerClass db;
@@ -89,6 +96,7 @@ public class SignupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
+        sigupData = new SignUpdata();
 
         ClassContainingUrls = new CellnoAndMailVerify();
 
@@ -186,70 +194,43 @@ public class SignupActivity extends AppCompatActivity {
                      Log.e("DIDN'T WORK", "exception " + exception);
                  }
 
+                 //This is an async task to check if the email entered by the user
+                 // is already present or not
 
-                 Log.i(NO_REST,"came out");
-
-                 new CheckEmail().execute();
-
-
-
+                 check1 = (CheckEmail) new CheckEmail();
+                 check2 = (CheckNumber) new CheckNumber();
 
 
 
-//                 Thread thread = new Thread(new Runnable() {
-//
-//                     @Override
-//                     public void run() {
-//                         String line = "";
-//
-//                         try{
-//
-//
-//                             URL url = new URL(ClassContainingUrls.getEmailURL());
-//                             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//                             connection.setReadTimeout(10000);
-//                             connection.setConnectTimeout(15000);
-//                             connection.setRequestMethod("GET");
-//                             connection.setDoInput(true);
-//
-//                             connection.connect();
-//
-//                             StringBuilder content = new StringBuilder();
-//                             BufferedReader reader = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );
-//
-//
-//                             while( (line = reader.readLine()) != null ){
-//                                 content.append(line);
-//                             }
-//                             line = content.toString();
-//                             result1 = line;
-//                         } catch(Exception ex) {
-//                             line = ex.getMessage();
-//                             ex.printStackTrace();
-//                         }
-//
-//                     }
-//                 });
-//
-//                thread.start();
+                 check1.execute();
+                 if(check1.getStatus2() == "SUCCESS") {
+                     Toast.makeText(SignupActivity.this, "Email Already taken Please enter a different Email",Toast.LENGTH_LONG).show();
+                 }
+                 else {
+                     check2.execute();
+                     if(check2.getStatus1() == "SUCCESS") {
+                         Toast.makeText(SignupActivity.this, "Phone Already taken Please enter a different phone number",Toast.LENGTH_LONG).show();
+                     }
+                 }
 
-
-//                 Log.i(NO_REST,result1);
+                 if(check1.getStatus2() == "FAIL")
+                 {
+                     if(check2.getStatus1() == "FAIL"){
+                         sigupData.setName(NameInput);
+                         sigupData.setContactno(ContactInput);
+                         sigupData.setDateofbirth(DateInput);
+                         sigupData.setPassword(PasswordInput);
+                         sigupData.setEmail(EmailInput);
+                         sigupData.setUserDescription(UserDescriptionInput);
+                         sigupData.setGender(GenderInput);
+                         //sigupData.setBloodGroup();
 
 
 
-                 //    try {
-               //      obj = new JSONObject(result1);
-                 //} catch (JSONException e) {
-                   //  e.printStackTrace();
-                 //}
 
-                 //try {
-                   //  status = obj.getString("STATUS");
-                 //} catch (JSONException e) {
-                   //  e.printStackTrace();
-                // }
-                 //Log.i(NO_REST,status);
+
+                     }
+                 }
              }
          });
 
@@ -295,40 +276,94 @@ public class SignupActivity extends AppCompatActivity {
         Date date = new Date();
         return dateFormat.format(date);
     }
-    private void load(){
-
-        String line = "";
-
-        try{
-
-            URL url = new URL(ClassContainingUrls.getEmailURL());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setReadTimeout(10000);
-            connection.setConnectTimeout(15000);
-            connection.setRequestMethod("GET");
-            connection.setDoInput(true);
-
-            connection.connect();
-
-            StringBuilder content = new StringBuilder();
-            BufferedReader reader = new BufferedReader( new InputStreamReader( connection.getInputStream() ) );
 
 
-            while( (line = reader.readLine()) != null ){
-                content.append(line);
-            }
-            line = content.toString();
-        } catch(Exception ex) {
-            line = ex.getMessage();
-            ex.printStackTrace();
+    private void register_User() {
+
+    }
+
+    //This async task is for verifying the number if it already exists or not
+
+    class CheckNumber extends AsyncTask<String,String,String>{
+        String error=null;
+        String status1;
+
+
+        public String getError() {
+            return error;
         }
 
-        result1 = line;
+        public String getStatus1() {
+            return status1;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            pDialog = new ProgressDialog(SignupActivity.this);
+            pDialog.setMessage("");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+
+        }
+
+
+        @Override
+        protected String doInBackground(String... strings) {
+            // Building Parameters
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            // getting JSON Object
+            // Note that create product url accepts POST method
+
+            JSONObject json = jsonParser.makeHttpRequest(ClassContainingUrls.getNumberURL()+ContactInput,
+                    "POST", params);
+            // checking for success tag
+            try {
+                if (json!=null) {
+
+                    status1 = json.getString("STATUS");
+                    //status= String.valueOf(statusObj);
+                }
+                else {
+                    error="Please Connect Internet !";
+                }
+            } catch (JSONException e) {
+
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            // dismiss the dialog once done
+            pDialog.dismiss();
+            //if(status1 == "SUCCESS"){
+              //  Toast.makeText(SignupActivity.this, "Number Already taken",Toast.LENGTH_LONG).show();
+            //}
+        }
     }
+
+
     class CheckEmail extends AsyncTask<String, String, String> {
 
         String error=null;
-        String status;
+        String status2;
+
+
+        public String getError() {
+            return error;
+        }
+
+        public String getStatus2() {
+            return status2;
+        }
+
+
         /**
          * Before starting background thread Show Progress Dialog
          * */
@@ -336,7 +371,7 @@ public class SignupActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(SignupActivity.this);
-            pDialog.setMessage("Checking from server...");
+            pDialog.setMessage("Verifying email");
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(true);
             pDialog.show();
@@ -357,7 +392,7 @@ public class SignupActivity extends AppCompatActivity {
             try {
                 if (json!=null) {
 
-                    status = json.getString("STATUS");
+                    status2 = json.getString("STATUS");
                     //status= String.valueOf(statusObj);
                 }
                 else {
@@ -377,10 +412,9 @@ public class SignupActivity extends AppCompatActivity {
         protected void onPostExecute(String file_url) {
             // dismiss the dialog once done
             pDialog.dismiss();
-            Toast.makeText(SignupActivity.this, status,Toast.LENGTH_LONG).show();
-
-
+            //if(status == "SUCCESS"){
+              //  Toast.makeText(SignupActivity.this, "Email Already taken",Toast.LENGTH_LONG).show();
+            //}
         }
-
     }
 }
