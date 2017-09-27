@@ -248,17 +248,13 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    DatePickerDialog datePickerDialog = new DatePickerDialog(SignupActivity.this,
-                            new DatePickerDialog.OnDateSetListener() {
-                                @Override
-                                public void onDateSet(DatePicker view, int year,
-                                                      int monthOfYear, int dayOfMonth) {
-
-                                    txtDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
-                                    Toast.makeText(SignupActivity.this, "Date picker clicked", Toast.LENGTH_SHORT);
-
-                                }
-                            }, mYear, mMonth, mDay);
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(SignupActivity.this, android.R.style.Theme_Holo_Dialog, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            txtDate.setText(dayOfMonth + "-" + (month + 1) + "-" + year);
+                            Toast.makeText(SignupActivity.this, "Date picker clicked", Toast.LENGTH_SHORT);
+                        }
+                    }, mYear, mMonth, mDay);
                     datePickerDialog.show();
                 }
                 return false;
