@@ -1,19 +1,28 @@
 package com.example.shaoo.blooddonationapp;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -24,7 +33,10 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -50,7 +62,6 @@ public class SignupActivity extends AppCompatActivity {
 
 
     public static final String NO_REST = "MY";
-
     private JSONObject obj;
     private String  status;
     private ProgressDialog pDialog;
@@ -71,6 +82,7 @@ public class SignupActivity extends AppCompatActivity {
      private EditText UserDescription;
      private EditText Date1;
      private Spinner Gender;
+     private Spinner BloodGroup;
      private Button RegisterButton;
 
      private String NameInput;
@@ -80,7 +92,12 @@ public class SignupActivity extends AppCompatActivity {
      private String UserDescriptionInput;
      private String DateInput;
      private String GenderInput;
-     private String result1;
+     private String BloodGroupInput;
+     private ImageView img;
+     String img_str;
+
+
+    private String result1;
      CheckEmail check1;
      CheckNumber check2;
      private SignUpdata sigupData;
@@ -106,8 +123,10 @@ public class SignupActivity extends AppCompatActivity {
         EmailAddress = (EditText) findViewById(R.id.appCompatEditText5);
         UserDescription = (EditText) findViewById(R.id.appCompatEditText6);
         Date1 = (EditText) findViewById(R.id.dateofBirth);
-        Gender = (Spinner) findViewById(R.id.genderSpinner);
+        Gender = (Spinner) findViewById(R.id.spinner);
+        BloodGroup = (Spinner) findViewById(R.id.appCompatSpinner);
         RegisterButton = (Button) findViewById(R.id.appCompatButton2);
+        img = (ImageView) findViewById(R.id.Profile);
         // Session manager
         session = new SessionManager(getApplicationContext());
 
@@ -146,6 +165,16 @@ public class SignupActivity extends AppCompatActivity {
                  UserDescriptionInput = UserDescription.getText().toString().trim();
                  DateInput = Date1.getText().toString().trim();
                  GenderInput = Gender.getSelectedItem().toString().trim();
+                 BloodGroupInput = BloodGroup.getSelectedItem().toString().trim();
+
+
+                //Converting the image to the bitmap image
+                 Bitmap bitmap=BitmapFactory.decodeResource(getResources(), R.id.Profile);
+                 ByteArrayOutputStream stream=new ByteArrayOutputStream();
+                 bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream);
+                 byte[] imageByteArray=stream.toByteArray();
+                 img_str = Base64.encodeToString(imageByteArray, 0);
+
                  // checking if some field is empty or not
                  // if yes then display the toast and return to app
                  if(NameInput.matches("") || PasswordInput.matches("")
@@ -155,6 +184,7 @@ public class SignupActivity extends AppCompatActivity {
                      Toast.makeText(getApplicationContext(), "Please Enter your Details", Toast.LENGTH_LONG).show();
                      return;
                  }
+
                  //Prompting the user to enter the correct email
                  if(isEmailValid(EmailInput) == false)
                  {
@@ -162,19 +192,15 @@ public class SignupActivity extends AppCompatActivity {
                      return;
                  }
 
-                 // Checking if the information typed by the user is above age 18
+                 // Checking if the user is above 18
                  // by subtracting the current date from the date of birth entered by the user
                  // utility function is at the end of the file
 
                  String currentDate = getDateTime();
-
                  try {
-
                      Date date1;
                      Date date2;
-
                      SimpleDateFormat dates = new SimpleDateFormat("dd-MM-yyyy");
-
                      //Setting dates
                      date1 = dates.parse(currentDate);
                      date2 = dates.parse(DateInput);
@@ -205,17 +231,68 @@ public class SignupActivity extends AppCompatActivity {
                  check1.execute();
                  if(check1.getStatus2() == "SUCCESS") {
                      Toast.makeText(SignupActivity.this, "Email Already taken Please enter a different Email",Toast.LENGTH_LONG).show();
+                     return;
                  }
                  else {
                      check2.execute();
                      if(check2.getStatus1() == "SUCCESS") {
                          Toast.makeText(SignupActivity.this, "Phone Already taken Please enter a different phone number",Toast.LENGTH_LONG).show();
+                         return;
                      }
                  }
 
                  if(check1.getStatus2() == "FAIL")
                  {
                      if(check2.getStatus1() == "FAIL"){
+
+
+
+                         //Checking if location is enabled
+                         LocationManager lm = (LocationManager)getApplicationContext().getSystemService(getApplicationContext().LOCATION_SERVICE);
+                         boolean gps_enabled = false;
+                         boolean network_enabled = false;
+
+                         try {
+                             gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                         } catch(Exception ex) {}
+
+                         try {
+                             network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                         } catch(Exception ex) {}
+
+                         if(!gps_enabled && !network_enabled) {
+                             // notify user
+                             AlertDialog.Builder dialog = new AlertDialog.Builder(getApplicationContext());
+                             dialog.setMessage(getApplicationContext().getResources().getString(R.string.gps_network_not_enabled));
+                             dialog.setPositiveButton(getApplicationContext().getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
+                                 @Override
+                                 public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                     // TODO Auto-generated method stub
+                                     Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                     getApplicationContext().startActivity(myIntent);
+                                     //get gps
+                                 }
+                             });
+                             dialog.setNegativeButton(getApplicationContext().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+
+                                 @Override
+                                 public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                                     // TODO Auto-generated method stub
+                                 }
+                             });
+                             dialog.show();
+                         }
+
+
+
+
+
+
+
+
+
+
+
                          sigupData.setName(NameInput);
                          sigupData.setContactno(ContactInput);
                          sigupData.setDateofbirth(DateInput);
@@ -223,12 +300,9 @@ public class SignupActivity extends AppCompatActivity {
                          sigupData.setEmail(EmailInput);
                          sigupData.setUserDescription(UserDescriptionInput);
                          sigupData.setGender(GenderInput);
-                         //sigupData.setBloodGroup();
-
-
-
-
-
+                         sigupData.setBloodGroup(BloodGroupInput);
+                         sigupData.setImageinbase64(img_str);
+                         register_User(sigupData);
                      }
                  }
              }
@@ -248,7 +322,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    DatePickerDialog datePickerDialog = new DatePickerDialog(SignupActivity.this, android.R.style.Theme_Holo_Light_Dialog, new DatePickerDialog.OnDateSetListener() {
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(SignupActivity.this, android.R.style.Theme_Holo_Dialog, new DatePickerDialog.OnDateSetListener() {
                         @Override
                         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                             txtDate.setText(dayOfMonth + "-" + (month + 1) + "-" + year);
@@ -273,9 +347,61 @@ public class SignupActivity extends AppCompatActivity {
         return dateFormat.format(date);
     }
 
+    public void LoadImage(View v) {
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        photoPickerIntent.setType("image/*");
+        startActivityForResult(photoPickerIntent, 1);
+    }
 
-    private void register_User() {
+    @Override
+    protected void onActivityResult(int reqCode, int resultCode, Intent data) {
+        super.onActivityResult(reqCode, resultCode, data);
 
+
+        if (resultCode == RESULT_OK) {
+            try {
+                final Uri imageUri = data.getData();
+                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                img.setImageBitmap(selectedImage);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(SignupActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+            }
+
+        }else {
+            Toast.makeText(SignupActivity.this, "You haven't picked Image",Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    private void register_User(SignUpdata obj) {
+
+
+
+
+
+
+    }
+    class SendingSignUpCredentials extends AsyncTask<String,String,String>{
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+
+        @Override
+        protected String doInBackground(String... strings) {
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
     }
 
     //This async task is for verifying the number if it already exists or not
@@ -343,6 +469,7 @@ public class SignupActivity extends AppCompatActivity {
             //}
         }
     }
+
 
     class CheckEmail extends AsyncTask<String, String, String> {
 

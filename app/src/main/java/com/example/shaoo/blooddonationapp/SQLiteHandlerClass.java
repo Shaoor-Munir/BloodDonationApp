@@ -34,10 +34,10 @@ public class SQLiteHandlerClass extends SQLiteOpenHelper {
     private static final String TABLE_USER = "UserData";
 
     //These are the columns of the table
-    private static final String KEY_ID = "id";
+    private static final String KEY_NAME = "name";
     private static final String KEY_EMAIL = "email";
     private static final String KEY_CONTACT = "contact";
-
+    private static final String BLOOD_GROUP = "blood_group";
 
 
 
@@ -54,8 +54,8 @@ public class SQLiteHandlerClass extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_USER +
-                "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-                + KEY_EMAIL + " TEXT UNIQUE," + KEY_CONTACT + " TEXT UNIQUE," + ")";
+                "(" + KEY_NAME + " TEXT," + KEY_CONTACT + " TEXT UNIQUE,"
+                + KEY_EMAIL + " TEXT UNIQUE," + BLOOD_GROUP + " TEXT," + ")";
         db.execSQL(CREATE_LOGIN_TABLE);
 
         Log.d(TAG, "Database table named UserData created");

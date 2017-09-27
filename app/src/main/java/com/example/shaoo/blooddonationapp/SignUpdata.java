@@ -11,6 +11,35 @@ public class SignUpdata {
     private String dateofbirth;
     private String Gender;
 
+    public String getLongitude() {
+        return Longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        Longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return Latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        Latitude = latitude;
+    }
+
+    private String Longitude;
+    private String Latitude;
+
+    public String getImageinbase64() {
+        return Imageinbase64;
+    }
+
+    public void setImageinbase64(String imageinbase64) {
+        Imageinbase64 = imageinbase64;
+    }
+
+    private String Imageinbase64;
+
     public String getName() {
         return Name;
     }
