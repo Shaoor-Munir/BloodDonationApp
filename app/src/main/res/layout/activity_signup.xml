@@ -8,206 +8,236 @@
     tools:layout_editor_absoluteX="0dp"
     tools:layout_editor_absoluteY="25dp">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/my_toolbar"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="0dp"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintBottom_toTopOf="@+id/profile_image_picker"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1">
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="SIGN UP"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/appCompatEditText2"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:hint="Name"
+        app:layout_constraintBottom_toTopOf="@+id/appCompatEditText5"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1" />
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/appCompatEditText3"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        app:layout_constraintBottom_toTopOf="@+id/appCompatEditText4"
+        app:layout_constraintHorizontal_bias="0.562"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1" />
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/appCompatEditText4"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:hint="Contact Number"
+        android:inputType="phone"
+        app:layout_constraintBottom_toTopOf="@+id/appCompatEditText6"
+        app:layout_constraintHorizontal_bias="0.812"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1" />
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/appCompatEditText5"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:hint="Email address"
+        android:inputType="textEmailAddress"
+        app:layout_constraintBottom_toTopOf="@+id/appCompatEditText3"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1" />
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/appCompatEditText6"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:hint="User description"
+        app:layout_constraintBottom_toTopOf="@+id/dateofBirth"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1" />
+
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/dateofBirth"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:hint="Date of Birth"
+        android:inputType="date"
+        app:layout_constraintBottom_toTopOf="@+id/cardSpinner"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1" />
+
+
+    <LinearLayout
+        android:id="@+id/cardSpinner"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/appCompatButton2"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1">
+
+        <android.support.v7.widget.CardView
             android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            tools:layout_constraintRight_creator="1"
-            tools:layout_constraintBottom_creator="1"
-            app:layout_constraintBottom_toTopOf="@+id/profile_image_picker"
-            tools:layout_constraintLeft_creator="1"
-            app:layout_constraintHorizontal_bias="0.0"
-            android:layout_marginBottom="0dp">
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_margin="5dp">
 
-            <TextView
-                android:id="@+id/toolbar_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="SIGN UP"
-                android:textColor="@android:color/white"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-        </android.support.v7.widget.Toolbar>
+            <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/genderSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:entries="@array/bloodgrp_dropdown_arrays" />
+        </android.support.v7.widget.CardView>
 
-        <android.support.v7.widget.AppCompatEditText
-            android:id="@+id/appCompatEditText2"
+        <android.support.v7.widget.CardView
             android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:hint="Name"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintRight_creator="1"
-            tools:layout_constraintBottom_creator="1"
-            app:layout_constraintBottom_toTopOf="@+id/appCompatEditText5"
-            tools:layout_constraintLeft_creator="1"
-            app:layout_constraintHorizontal_bias="1.0" />
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp">
 
-        <android.support.v7.widget.AppCompatEditText
-            android:id="@+id/appCompatEditText3"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:hint="Password"
-            android:inputType="textPassword"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintRight_creator="1"
-            tools:layout_constraintBottom_creator="1"
-            app:layout_constraintBottom_toTopOf="@+id/appCompatEditText4"
-            tools:layout_constraintLeft_creator="1"
-            app:layout_constraintHorizontal_bias="0.562" />
+            <android.support.v7.widget.AppCompatSpinner
+                android:id="@+id/bloodSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:entries="@array/android_dropdown_arrays" />
 
-        <android.support.v7.widget.AppCompatEditText
-            android:id="@+id/appCompatEditText4"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:hint="Contact Number"
-            android:inputType="phone"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintRight_creator="1"
-            tools:layout_constraintBottom_creator="1"
-            app:layout_constraintBottom_toTopOf="@+id/appCompatEditText6"
-            tools:layout_constraintLeft_creator="1"
-            app:layout_constraintHorizontal_bias="0.812" />
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
 
-        <android.support.v7.widget.AppCompatEditText
-            android:id="@+id/appCompatEditText5"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:hint="Email address"
-            android:inputType="textEmailAddress"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintRight_creator="1"
-            tools:layout_constraintBottom_creator="1"
-            app:layout_constraintBottom_toTopOf="@+id/appCompatEditText3"
-            tools:layout_constraintLeft_creator="1"
-            app:layout_constraintHorizontal_bias="1.0" />
+    <android.support.v7.widget.AppCompatSpinner
+        android:id="@+id/appCompatSpinner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:entries="@array/bloodgrp_dropdown_arrays"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1" />
 
-        <android.support.v7.widget.AppCompatEditText
-            android:id="@+id/appCompatEditText6"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:hint="User description"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintRight_creator="1"
-            tools:layout_constraintBottom_creator="1"
-            app:layout_constraintBottom_toTopOf="@+id/dateofBirth"
-            tools:layout_constraintLeft_creator="1"
-            app:layout_constraintHorizontal_bias="0.0" />
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/appCompatButton2"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="-212dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:background="@color/colorPrimary"
+        android:text="DONE"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1" />
 
+    <LinearLayout
+        android:id="@+id/profile_image_picker"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="-109dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/appCompatEditText2"
+        app:layout_constraintHorizontal_bias="0.8"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1">
 
-        <android.support.v7.widget.AppCompatEditText
-            android:id="@+id/dateofBirth"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:hint="Date of Birth"
-            android:inputType="date"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintRight_creator="1"
-            tools:layout_constraintBottom_creator="1"
-            app:layout_constraintBottom_toTopOf="@+id/spinner"
-            tools:layout_constraintLeft_creator="1"
-            app:layout_constraintHorizontal_bias="0.0" />
-
-
-        <Spinner
-            android:id="@+id/spinner"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:entries="@array/android_dropdown_arrays"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintRight_creator="1"
-            tools:layout_constraintBottom_creator="1"
-            app:layout_constraintBottom_toTopOf="@+id/appCompatButton2"
-            tools:layout_constraintLeft_creator="1"
-            app:layout_constraintHorizontal_bias="0.0" />
-
-        <android.support.v7.widget.AppCompatSpinner
-            android:id="@+id/appCompatSpinner"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:entries="@array/bloodgrp_dropdown_arrays"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintTop_creator="1"
-            tools:layout_constraintRight_creator="1"
-            tools:layout_constraintBottom_creator="1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="parent"
-            tools:layout_constraintLeft_creator="1" />
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_account_circle_black_48dp" />
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/appCompatButton2"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:background="@color/colorPrimary"
-            android:text="DONE"
-            android:textColor="@android:color/white"
-            android:textSize="20sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="-212dp"
-            tools:layout_constraintRight_creator="1"
-            tools:layout_constraintLeft_creator="1"
-            app:layout_constraintHorizontal_bias="1.0" />
-
-        <LinearLayout
-            android:id="@+id/profile_image_picker"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="-109dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/appCompatEditText2"
-            app:layout_constraintHorizontal_bias="0.8"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintBottom_creator="1"
-            tools:layout_constraintLeft_creator="1"
-            tools:layout_constraintRight_creator="1">
+            android:layout_gravity="center"
+            android:background="@color/colorPrimary"
+            android:text="Select profile picture"
+            android:textColor="@android:color/white" />
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:src="@drawable/ic_account_circle_black_48dp"
-                    android:layout_gravity="center"/>
-                <android.support.v7.widget.AppCompatButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Select profile picture"
-                    android:layout_gravity="center"
-                    android:textColor="@android:color/white"
-                    android:background="@color/colorPrimary"/>
+    </LinearLayout>
 
-        </LinearLayout>
 </android.support.constraint.ConstraintLayout>

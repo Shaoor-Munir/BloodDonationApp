@@ -106,7 +106,7 @@ public class SignupActivity extends AppCompatActivity {
         EmailAddress = (EditText) findViewById(R.id.appCompatEditText5);
         UserDescription = (EditText) findViewById(R.id.appCompatEditText6);
         Date1 = (EditText) findViewById(R.id.dateofBirth);
-        Gender = (Spinner) findViewById(R.id.spinner);
+        Gender = (Spinner) findViewById(R.id.genderSpinner);
         RegisterButton = (Button) findViewById(R.id.appCompatButton2);
         // Session manager
         session = new SessionManager(getApplicationContext());
@@ -248,7 +248,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if(event.getAction() == MotionEvent.ACTION_DOWN) {
-                    DatePickerDialog datePickerDialog = new DatePickerDialog(SignupActivity.this, android.R.style.Theme_Holo_Dialog, new DatePickerDialog.OnDateSetListener() {
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(SignupActivity.this, android.R.style.Theme_Holo_Light_Dialog, new DatePickerDialog.OnDateSetListener() {
                         @Override
                         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                             txtDate.setText(dayOfMonth + "-" + (month + 1) + "-" + year);
@@ -343,7 +343,6 @@ public class SignupActivity extends AppCompatActivity {
             //}
         }
     }
-
 
     class CheckEmail extends AsyncTask<String, String, String> {
 

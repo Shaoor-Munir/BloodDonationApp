@@ -6,40 +6,63 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+
 public class HomeScreen extends AppCompatActivity implements OnFragmentInteractionListener {
 
     Toolbar toolbar;
     Fragment selectedFragment;
+    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            FragmentManager fm = getSupportFragmentManager();
+            String tag = "";
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    selectedFragment = HomeFragment.newInstance(null, null);
+                    tag = "home";
+                    selectedFragment = fm.findFragmentByTag(tag);
+                    if (selectedFragment == null)
+                        selectedFragment = HomeFragment.newInstance(null, null);
                     break;
                 case R.id.navigation_search:
-                    selectedFragment = SearchFragment.newInstance(null, null);
+                    tag = "search";
+                    selectedFragment = fm.findFragmentByTag(tag);
+                    if (selectedFragment == null)
+                        selectedFragment = SearchFragment.newInstance(null, null);
                     break;
                 case R.id.navigation_compatibility:
-                    selectedFragment = CompatibilityFragment.newInstance(null, null);
+                    tag = "compatibility";
+                    selectedFragment = fm.findFragmentByTag(tag);
+                    if (selectedFragment == null)
+                        selectedFragment = CompatibilityFragment.newInstance(null, null);
                     break;
                 case R.id.navigation_settings:
-                    selectedFragment = SettingsFragment.newInstance(null, null);
+                    tag = "settings";
+                    selectedFragment = fm.findFragmentByTag(tag);
+                    if (selectedFragment == null)
+                        selectedFragment = SettingsFragment.newInstance(null, null);
                     break;
             }
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.content, selectedFragment);
+            transaction.replace(R.id.content, selectedFragment, tag);
             transaction.commit();
             return true;
 
@@ -75,6 +98,7 @@ public class HomeScreen extends AppCompatActivity implements OnFragmentInteracti
     public void onFragmentInteraction(Uri uri) {
 
     }
+
     public void SearchClicked(View view) {
 
         selectedFragment = MapFragment.newInstance(null, null);

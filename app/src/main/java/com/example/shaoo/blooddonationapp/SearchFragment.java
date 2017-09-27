@@ -3,10 +3,28 @@ package com.example.shaoo.blooddonationapp;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.Toast;
+
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.location.places.ui.SupportPlaceAutocompleteFragment;
+import com.google.android.gms.maps.model.TileOverlay;
 
 
 /**
@@ -64,7 +82,47 @@ public class SearchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_search, container, false);
+
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+        final SwitchCompat sw = (SwitchCompat) view.findViewById(R.id.map_view_switch);
+        sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(sw.isChecked())
+                {
+                    sw.setText("List View");
+                }
+                else
+                {
+                    sw.setText("Map View");
+                }
+            }
+        });
+        super.onViewCreated(view, savedInstanceState);
+        SupportPlaceAutocompleteFragment autocompleteFragment = (SupportPlaceAutocompleteFragment)getChildFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setHint("Search for a place");
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Toast.makeText(getContext(), "Place: " + place.getName(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Toast.makeText(getContext(), "An error occurred: " + status, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
