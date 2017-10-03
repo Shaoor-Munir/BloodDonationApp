@@ -10,6 +10,9 @@ public class SignUpdata {
     private String bloodGroup;
     private String dateofbirth;
     private String Gender;
+    private String Longitude;
+    private String Latitude;
+    private String Imageinbase64;
 
     public String getLongitude() {
         return Longitude;
@@ -27,8 +30,6 @@ public class SignUpdata {
         Latitude = latitude;
     }
 
-    private String Longitude;
-    private String Latitude;
 
     public String getImageinbase64() {
         return Imageinbase64;
@@ -38,7 +39,6 @@ public class SignUpdata {
         Imageinbase64 = imageinbase64;
     }
 
-    private String Imageinbase64;
 
     public String getName() {
         return Name;
