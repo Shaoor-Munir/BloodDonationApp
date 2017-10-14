@@ -36,6 +36,12 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 
@@ -57,7 +63,7 @@ import java.util.regex.Pattern;
 
 
 
-public class SignupActivity extends AppCompatActivity implements android.location.LocationListener,AsyncHelper {
+public class SignupActivity extends AppCompatActivity implements android.location.LocationListener {
 
     public static final String NO_REST = "MY";
     private ProgressDialog pDialog;
@@ -68,7 +74,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
      private EditText EmailAddress;
      private EditText Password;
      private EditText ContactNumber;
-     private EditText UserDescription;
+     private EditText City;
      private EditText Date1; //Date of birth
      private Spinner BloodGroup;
      private Spinner Gender;
@@ -79,7 +85,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
      private String EmailInput;
      private String PasswordInput;
      private String ContactInput;
-     private String UserDescriptionInput;
+     private String CityInput;
      private String DateInput;
      private String GenderInput;
      private String BloodGroupInput;
@@ -101,32 +107,13 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
 
 
 
-     private String context;
-     private String Longitude;
-     private String Latitude;
 
-    //variables related to the network thingy
-    private ConnectivityManager cm;
-    private NetworkInfo networkInfo;
-    int type;
-    String typeName;
-    boolean connected;
-
-
-
-
-
-
-
-    CheckEmailandNumber ch = (CheckEmailandNumber) new CheckEmailandNumber();
-    String email_number_response_string;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        ch.delegate = this;
         ClassContainingUrls = new CellnoAndMailVerify();
 
 
@@ -136,28 +123,21 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
             return;
         }
 
-        //locationManager.requestLocationUpdates(provider, 400, 1, this);
-        //location = getLastKnownLocationCustom();
-
-
-
-
+        locationManager.requestLocationUpdates(provider, 400, 1, this);
+        location = getLastKnownLocationCustom();
 
 
         Name = (EditText) findViewById(R.id.appCompatEditText2);
         Password = (EditText) findViewById(R.id.appCompatEditText3);
         ContactNumber = (EditText) findViewById(R.id.appCompatEditText4);
         EmailAddress = (EditText) findViewById(R.id.appCompatEditText5);
-        UserDescription = (EditText) findViewById(R.id.appCompatEditText6);
+        City = (EditText) findViewById(R.id.appCompatEditText6);
         Date1 = (EditText) findViewById(R.id.dateofBirth);
         Gender = (Spinner) findViewById(R.id.genderSpinner);
-        BloodGroup = (Spinner) findViewById(R.id.appCompatSpinner);
+        BloodGroup = (Spinner) findViewById(R.id.bloodSpinner);
         RegisterButton = (Button) findViewById(R.id.appCompatButton2);
         img = (ImageView) findViewById(R.id.Profile);
 
-
-        //location thingy
-        //locationManager.requestLocationUpdates(provider, 400, 1, this);
 
 
         // Session manager
@@ -185,18 +165,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         });
 
 
-
-//                         sigupData.setName(NameInput);
-//                         sigupData.setContactno(ContactInput);
-//                         sigupData.setDateofbirth(DateInput);
-//                         sigupData.setPassword(PasswordInput);
-//                         sigupData.setEmail(EmailInput);
-//                         sigupData.setUserDescription(UserDescriptionInput);
-//                         sigupData.setGender(GenderInput);
-//                         sigupData.setBloodGroup(BloodGroupInput);
-//                         sigupData.setImageinbase64(img_str);
-//                        // register_User(sigupData);
-           //          }
 
         final Calendar c = Calendar.getInstance();
         final int mYear = c.get(Calendar.YEAR);
@@ -234,34 +202,29 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         PasswordInput = Password.getText().toString().trim();
         ContactInput = ContactNumber.getText().toString().trim();
         EmailInput = EmailAddress.getText().toString().trim();
-        UserDescriptionInput = UserDescription.getText().toString().trim();
+        CityInput = City.getText().toString().trim();
         DateInput = Date1.getText().toString().trim();
         GenderInput = Gender.getSelectedItem().toString().trim();
         BloodGroupInput = BloodGroup.getSelectedItem().toString().trim();
-        Log.i(NO_REST,"2");
-
 
         //Converting the image to the bitmap image
+
         img.buildDrawingCache();
         Bitmap bitmap= img.getDrawingCache();
-
         ByteArrayOutputStream stream=new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream);
         byte[] image=stream.toByteArray();
         img_str = Base64.encodeToString(image, 0);
 
-        Log.i(NO_REST,"3");
-
         // checking if some field is empty or not
         // if yes then display the toast and return to app
         if(NameInput.matches("") || PasswordInput.matches("")
                 || ContactInput.matches("") ||
-                EmailInput.matches("") || UserDescriptionInput.matches("")
+                EmailInput.matches("") || CityInput.matches("")
                 || DateInput.matches("")) {
             Toast.makeText(getApplicationContext(), "Please Enter your Details", Toast.LENGTH_LONG).show();
             return;
         }
-        Log.i(NO_REST,"4");
 
 
         //Prompting the user to enter the correct email
@@ -270,7 +233,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
             Toast.makeText(getApplicationContext(), "Please enter the correct email format", Toast.LENGTH_LONG).show();
             return;
         }
-        Log.i(NO_REST,"5");
 
 
         // Checking if the user is above 18
@@ -300,60 +262,88 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         } catch (Exception exception) {
             Log.e("DIDN'T WORK", "exception " + exception);
         }
-        Log.i(NO_REST,"6");
 
-        Log.i(NO_REST,"7");
-        connected = isInternetConnected(SignupActivity.this);
 
-        Log.i(NO_REST, "8");
 
-        if(connected == false) {
-            // net work not available so i ll prompt the switched on the internet
-
+        // Checking the internet connection
+        if(isNetworkAvailable() == false) {
             Toast.makeText(SignupActivity.this,"Please switched on the network",Toast.LENGTH_LONG).show();
-
-
-//
-//
-//            Log.i(NO_REST,"9");
-//
-//            Log.i(NO_REST,"16");
-//
-//            //AlertDialog alert11 = builder1.create();
-//            Log.i(NO_REST,"17");
-//
-//            //alert11.show();
-//            Log.i(NO_REST,"18");
-
             return;
         }
 
-        Log.i(NO_REST,"19");
 
-        ch.execute(EmailInput,ClassContainingUrls.getEmailURL(),ContactInput,ClassContainingUrls.getNumberURL());
-        Log.i(NO_REST,"20");
-        return;
+        // checking if the email already exists or not
+        String url =  ClassContainingUrls.getEmailURL()+EmailInput;
+
+        // Sending the request via the volley
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,url,null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+
+                            if(response.getString("STATUS") == "SUCCESS") {
+                                Toast.makeText(getApplicationContext(),"Email Already taken.Please enter a different email",Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            else {
+
+                                String url1 = ClassContainingUrls.getNumberURL()+ContactInput;
+
+                                RequestQueue queue1 = Volley.newRequestQueue(getApplicationContext());
+                                JsonObjectRequest req1 = new JsonObjectRequest(Request.Method.GET,url1,null,
+                                        new Response.Listener<JSONObject>() {
+                                            @Override
+                                            public void onResponse(JSONObject response) {
+                                                try {
+
+                                                    if(response.getString("STATUS") == "SUCCESS") {
+                                                        Toast.makeText(getApplicationContext(),"Phone no already " +
+                                                                "taken.Please Enter different",Toast.LENGTH_LONG).show();
+                                                        return;
+                                                    }
+                                                    else {
+                                                        Toast.makeText(getApplicationContext(),"Number and mail not existing",Toast.LENGTH_LONG).show();
+                                                    }
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        Toast.makeText(getApplicationContext(),"Error Occured while sending the data",Toast.LENGTH_LONG).show();
+                                        return;
+                                    }
+                                });
+                                queue1.add(req1);
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(),"Error Occured while sending the data",Toast.LENGTH_LONG).show();
+                return;
+            }
+        });
+        queue.add(req);
     }
 
-    public static boolean isInternetConnected (Context ctx) {
-        ConnectivityManager connectivityMgr = (ConnectivityManager) ctx
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifi = connectivityMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo mobile = connectivityMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        // Check if wifi or mobile network is available or not. If any of them is
-        // available or connected then it will return true, otherwise false;
-        if (wifi != null) {
-            if (wifi.isConnected()) {
-                return true;
-            }
-        }
-        if (mobile != null) {
-            if (mobile.isConnected()) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(getApplicationContext().CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
+
+
+
+
 
     public static boolean isEmailValid(String email) {
         String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
@@ -393,8 +383,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
             Toast.makeText(SignupActivity.this, "You haven't picked Image",Toast.LENGTH_LONG).show();
         }
     }
-    private void register_User(SignUpdata obj) {
-    }
     @Override
     public void onLocationChanged(Location location) {}
     @Override
@@ -424,126 +412,56 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         return bestLocation;
     }
 
-    @Override
-    public void processFinish(String output) {
-        email_number_response_string = output;
-        Log.i(NO_REST,email_number_response_string);
+//    @Override
+//    public void processFinish(String output) {
+//        email_number_response_string = output;
+//        Log.i(NO_REST,email_number_response_string);
+//
+//
+//
+//        String[] separated = email_number_response_string.split(" ");
+//        String check1 = separated[0];
+//        String check2 = separated[1];
+//        //Log.i(NO_REST,separated[0]);
+//       // Log.i(NO_REST,separated[1]);
+//        if(check1.equals("SUCCESS") ) {
+//            Toast.makeText(getApplicationContext(),"This email already taken",Toast.LENGTH_LONG).show();
+//            return;
+//        }
+//        if(check2.equals("SUCCESS")) {
+//            Toast.makeText(getApplicationContext(),"This contact no already taken",Toast.LENGTH_LONG).show();
+//            return;
+//        }
+//
+//        if(check1.equals("FAIL"))
+//        {
+//            if(check2.equals("FAIL")) {
+//                Log.i(NO_REST,"agya ander");
+//                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+//                    Toast.makeText(getApplicationContext(),"Email and number successfully verified",Toast.LENGTH_LONG).show();
+//                    locationManager.requestLocationUpdates(provider, 400, 1, this);
+//                    location = getLastKnownLocationCustom();
+//
+//
+//                    if(location != null) {
+//                        Toast.makeText(SignupActivity.this, (int) location.getLatitude(),Toast.LENGTH_LONG).show();
+//                        Toast.makeText(SignupActivity.this,(int) location.getLongitude(),Toast.LENGTH_LONG).show();
+//                    }
+//                    else {
+//                        Toast.makeText(SignupActivity.this,"Location is null.Trying to achieve it",Toast.LENGTH_LONG).show();
+//
+////                        while (location == null) {
+////                            Toast.makeText(SignupActivity.this, "Location not found finding it",Toast.LENGTH_LONG).show();
+////                            locationManager.requestLocationUpdates(provider, 400, 1, this);
+////                            location = getLastKnownLocationCustom();
+////                        }
+//                    }
+//                }else{
+//                    Toast.makeText(SignupActivity.this,"Location not enabled.Please enabled it",Toast.LENGTH_LONG).show();
+//                    return;
+//                }
+//            }
+//        }
+//    }
 
-
-
-        String[] separated = email_number_response_string.split(" ");
-        String check1 = separated[0];
-        String check2 = separated[1];
-        //Log.i(NO_REST,separated[0]);
-       // Log.i(NO_REST,separated[1]);
-        if(check1.equals("SUCCESS") ) {
-            Toast.makeText(getApplicationContext(),"This email already taken",Toast.LENGTH_LONG).show();
-            return;
-        }
-        if(check2.equals("SUCCESS")) {
-            Toast.makeText(getApplicationContext(),"This contact no already taken",Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        if(check1.equals("FAIL"))
-        {
-            if(check2.equals("FAIL")) {
-                Log.i(NO_REST,"agya ander");
-                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-                    Toast.makeText(getApplicationContext(),"Email and number successfully verified",Toast.LENGTH_LONG).show();
-                    locationManager.requestLocationUpdates(provider, 400, 1, this);
-                    location = getLastKnownLocationCustom();
-
-
-                    if(location != null) {
-                        Toast.makeText(SignupActivity.this, (int) location.getLatitude(),Toast.LENGTH_LONG).show();
-                        Toast.makeText(SignupActivity.this,(int) location.getLongitude(),Toast.LENGTH_LONG).show();
-                    }
-                    else {
-                        Toast.makeText(SignupActivity.this,"Location is null.Trying to achieve it",Toast.LENGTH_LONG).show();
-
-//                        while (location == null) {
-//                            Toast.makeText(SignupActivity.this, "Location not found finding it",Toast.LENGTH_LONG).show();
-//                            locationManager.requestLocationUpdates(provider, 400, 1, this);
-//                            location = getLastKnownLocationCustom();
-//                        }
-                    }
-                }else{
-                    Toast.makeText(SignupActivity.this,"Location not enabled.Please enabled it",Toast.LENGTH_LONG).show();
-                    return;
-                }
-            }
-        }
-    }
-
-    class SendingSignUpCredentials extends AsyncTask<String,String,String>{
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-
-        @Override
-        protected String doInBackground(String... strings) {
-            return null;
-        }
-
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-        }
-    }
-    // this async task is used to check whether email already exists or not
-    private class CheckEmailandNumber extends AsyncTask<String, String, String> {
-        public AsyncHelper delegate = null;
-        String responseString;
-        String responseString1;
-        boolean internet_availability = true;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(SignupActivity.this);
-            pDialog.setMessage("Verifying email and number");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-        protected String doInBackground(String... args) {
-            List<NameValuePair> params = new ArrayList<NameValuePair>();
-            JSONObject json = jsonParser.makeHttpRequest(args[1]+args[0],
-                    "POST", params);
-            try {
-                if (json!=null) {
-                    responseString = json.getString("STATUS");
-                }
-                else {
-                    internet_availability = false;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            List<NameValuePair> params1 = new ArrayList<NameValuePair>();
-            JSONObject json1 = jsonParser.makeHttpRequest(args[3]+args[2],
-                    "POST", params1);
-            try {
-                if (json!=null) {
-                    responseString1 = json1.getString("STATUS");
-                }
-                else {
-                    internet_availability = false;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            return responseString+" "+ responseString1;
-        }
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            pDialog.dismiss();
-            delegate.processFinish(result);
-        }
-    }
 }

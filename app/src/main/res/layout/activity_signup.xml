@@ -104,7 +104,7 @@
         android:layout_height="48dp"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
-        android:hint="User description"
+        android:hint="City"
         app:layout_constraintBottom_toTopOf="@+id/dateofBirth"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
