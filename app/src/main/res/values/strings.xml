@@ -28,9 +28,12 @@
     <string name="title_search">Search</string>
     <string name="title_compatibility">Compatibility Section</string>
     <string name="title_settings">Settings</string>
-    <string name="gps_network_not_enabled">GPS not enabled</string>
+    <string name="gps_not_enabled">GPS not enabled</string>
+    <string name="network_not_enabled">Network not enabled</string>
     <string name="open_location_settings">Open the location settings</string>
     <string name="Cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 
     <string-array name="bloodgrp_dropdown_arrays">
