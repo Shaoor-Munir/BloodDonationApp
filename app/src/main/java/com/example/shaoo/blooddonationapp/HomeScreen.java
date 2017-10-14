@@ -46,7 +46,7 @@ public class HomeScreen extends AppCompatActivity implements OnFragmentInteracti
                     tag = "search";
                     selectedFragment = fm.findFragmentByTag(tag);
                     if (selectedFragment == null)
-                        selectedFragment = SearchFragment.newInstance(null, null);
+                        selectedFragment = SearchFragment.newInstance(null, "Home");
                     break;
                 case R.id.navigation_compatibility:
                     tag = "compatibility";
@@ -99,7 +99,7 @@ public class HomeScreen extends AppCompatActivity implements OnFragmentInteracti
 
     }
 
-    public void SearchClicked(View view) {
+    public void SearchClicked() {
 
         selectedFragment = MapFragment.newInstance(null, null);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

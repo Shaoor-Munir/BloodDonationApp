@@ -9,11 +9,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Map;
 
 
 /**
@@ -29,12 +36,10 @@ public class MapFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    MapView mMapView;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-    MapView mMapView;
     private GoogleMap googleMap;
 
     private OnFragmentInteractionListener mListener;
@@ -90,6 +95,26 @@ public class MapFragment extends Fragment {
             @Override
             public void onMapReady(GoogleMap mMap) {
                 googleMap = mMap;
+                for (Integer id : SearchFragment.userMap.keySet()) {
+                    Map<String, String> map = SearchFragment.userMap.get(id);
+                    double longitude = Double.parseDouble(map.get("longitude"));
+                    double latitude = Double.parseDouble(map.get("latitude"));
+                    Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromResource(R.drawable.blood)));
+                    marker.setTag(id);
+                }
+                LatLng coordinate = new LatLng(21.3, 12.2);
+                CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 10);
+                mMap.animateCamera(yourLocation);
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        int position = (int) (marker.getTag());
+                        String Name = SearchFragment.userMap.get(position).get("name");
+                        Toast.makeText(getContext(), Name, Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                });
+
 
                 googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                     @Override
