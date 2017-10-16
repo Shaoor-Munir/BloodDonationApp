@@ -37,8 +37,15 @@ public class SQLiteHandlerClass extends SQLiteOpenHelper {
     private static final String KEY_NAME = "name";
     private static final String KEY_EMAIL = "email";
     private static final String KEY_CONTACT = "contact";
+    private static final String KEY_PASSWORD = "password";
+    private static final String KEY_AGE = "age";
+    private static final String KEY_GENDER = "gender";
+    private static final String KEY_LONGITUDE = "longitude";
+    private static final String KEY_LATITUDE = "latitude";
+    private static final String KEY_IMAGE = "image";
     private static final String BLOOD_GROUP = "blood_group";
-
+    private static final String KEY_CITY = "city";
+    private static final String KEY_ID = "id";
 
 
 
@@ -54,8 +61,19 @@ public class SQLiteHandlerClass extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_USER +
-                "(" + KEY_NAME + " TEXT," + KEY_CONTACT + " TEXT UNIQUE,"
-                + KEY_EMAIL + " TEXT UNIQUE," + BLOOD_GROUP + " TEXT," + ")";
+                "(" + KEY_NAME + " TEXT,"
+                + KEY_EMAIL + " TEXT UNINQUE,"
+                + KEY_PASSWORD + " TEXT,"
+                + KEY_CITY + " TEXT,"
+                + KEY_CONTACT + " TEXT UNIQUE,"
+                + KEY_AGE + " INTEGER,"
+                + KEY_GENDER + " INTEGER,"
+                + KEY_LONGITUDE + " REAL,"
+                + KEY_LATITUDE + " REAL,"
+                + KEY_IMAGE + " VARCHAR(100),"
+                + BLOOD_GROUP + " TEXT," + ")";
+
+
         db.execSQL(CREATE_LOGIN_TABLE);
 
         Log.d(TAG, "Database table named UserData created");
@@ -63,24 +81,31 @@ public class SQLiteHandlerClass extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-
-        // Drop older table if existed
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
-        // Create tables again
         onCreate(db);
     }
 
-    public void addUser(String name, String email, String uid, String created_at) {
+
+    public void add_user_data(LoginData data){
         SQLiteDatabase db = this.getWritableDatabase();
-
         ContentValues values = new ContentValues();
-        values.put(KEY_EMAIL, email); // Email
+        values.put(KEY_NAME, data.getName());
+        values.put(KEY_EMAIL, data.getMail());
+        values.put(KEY_PASSWORD, data.getPassword());
+        values.put(KEY_CITY, data.getCity());
+        values.put(KEY_CONTACT,data.getContact());
+        values.put(KEY_AGE,data.getAge());
+        values.put(KEY_GENDER,data.getGender());
+        values.put(KEY_LONGITUDE,data.getLongitude());
+        values.put(KEY_LATITUDE,data.getLatitude());
+        values.put(BLOOD_GROUP,data.getBloodgroup());
 
-        // Inserting Row
         long id = db.insert(TABLE_USER, null, values);
         db.close(); // Closing database connection
 
         Log.d(TAG, "New user inserted into sqlite: " + id);
+
+
     }
 
     /**
