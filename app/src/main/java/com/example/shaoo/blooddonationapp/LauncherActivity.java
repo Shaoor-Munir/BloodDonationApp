@@ -33,6 +33,7 @@ public class LauncherActivity extends AppCompatActivity implements OnFragmentInt
         transaction.replace(R.id.content, selectedFragment);
         transaction.commit();
 
+
     }
 
     public void LoginButtonPressed(View view) {
@@ -50,10 +51,15 @@ public class LauncherActivity extends AppCompatActivity implements OnFragmentInt
     public void onFragmentInteraction(Uri uri) {
 
     }
+//    @Override
+//    public void onBackPressed()
+//    {
+//        if (getFragmentManager().getBackStackEntryCount() > 0) {
+//            getFragmentManager().popBackStack();
+//        } else {
+//            super.onBackPressed();
+//        }
+//    }
 
-    public void SearchClicked(View view) {
-
-
-    }
 
 }

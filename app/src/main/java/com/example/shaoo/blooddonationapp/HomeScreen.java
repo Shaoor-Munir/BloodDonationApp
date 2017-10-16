@@ -99,14 +99,6 @@ public class HomeScreen extends AppCompatActivity implements OnFragmentInteracti
 
     }
 
-    public void SearchClicked() {
-
-        selectedFragment = MapFragment.newInstance(null, null);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content, selectedFragment);
-        transaction.commit();
-    }
-
     public void LikeClicked(View view) {
         Toast.makeText(this, "Like Clicked", Toast.LENGTH_SHORT).show();
     }

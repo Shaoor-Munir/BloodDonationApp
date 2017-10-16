@@ -1,12 +1,19 @@
 package com.example.shaoo.blooddonationapp;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -80,6 +87,21 @@ public class MapFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    Fragment selectedFragment = SearchFragment.newInstance(null, "Launcher");
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content, selectedFragment);
+                    transaction.commit();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         mMapView = (MapView) view.findViewById(R.id.blood_map);
         mMapView.onCreate(savedInstanceState);
@@ -95,36 +117,75 @@ public class MapFragment extends Fragment {
             @Override
             public void onMapReady(GoogleMap mMap) {
                 googleMap = mMap;
-                for (Integer id : SearchFragment.userMap.keySet()) {
-                    Map<String, String> map = SearchFragment.userMap.get(id);
-                    double longitude = Double.parseDouble(map.get("longitude"));
-                    double latitude = Double.parseDouble(map.get("latitude"));
+                int count = 0;
+                for (Map<String, Object> map : SearchFragment.userList) {
+                    double longitude = Double.parseDouble((String) map.get("longitude"));
+                    double latitude = Double.parseDouble((String) map.get("latitude"));
                     Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromResource(R.drawable.blood)));
-                    marker.setTag(id);
+                    marker.setTag(count);
+                    count++;
                 }
                 LatLng coordinate = new LatLng(21.3, 12.2);
-                CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 10);
+                CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 8);
                 mMap.animateCamera(yourLocation);
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
                         int position = (int) (marker.getTag());
-                        String Name = SearchFragment.userMap.get(position).get("name");
-                        Toast.makeText(getContext(), Name, Toast.LENGTH_SHORT).show();
+                        String name = (String) SearchFragment.userList.get(position).get("name");
+                        String age = (String) SearchFragment.userList.get(position).get("age");
+                        String gender = (String) SearchFragment.userList.get(position).get("gender");
+                        String bgroup = (String) SearchFragment.userList.get(position).get("bloodGroup");
+                        String address = (String) SearchFragment.userList.get(position).get("city");
+                        String contct = (String) SearchFragment.userList.get(position).get("contact");
+                        String email = (String) SearchFragment.userList.get(position).get("email");
+                        Bitmap image = (Bitmap) SearchFragment.userList.get(position).get("image");
+                        LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        View view = layoutInflater.inflate(R.layout.donor_detail, null);
+                        TextView nameTXT = (TextView) view.findViewById(R.id.nameTXT);
+                        TextView ageTXT = (TextView) view.findViewById(R.id.ageTXT);
+                        TextView genderTXT = (TextView) view.findViewById(R.id.genderTXT);
+                        TextView bgroupTXT = (TextView) view.findViewById(R.id.bgroupTXT);
+                        TextView addressTXT = (TextView) view.findViewById(R.id.addressTXT);
+                        TextView contactTXT = (TextView) view.findViewById(R.id.contactTXT);
+                        TextView emailTXT = (TextView) view.findViewById(R.id.emailTXT);
+                        ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
+                        nameTXT.setText(name);
+                        ageTXT.setText(age);
+                        genderTXT.setText(gender);
+                        bgroupTXT.setText(bgroup);
+                        addressTXT.setText(address);
+                        contactTXT.setText(contct);
+                        emailTXT.setText(email);
+                        imageView.setImageBitmap(image);
+                        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).setIcon(R.drawable.blood).setTitle("Blood Doner Detail")
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                }).setView(view).create();
+                        alertDialog.show();
+                        //Toast.makeText(getContext(), name, Toast.LENGTH_SHORT).show();
                         return true;
                     }
                 });
 
 
-                googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                    @Override
-                    public void onInfoWindowClick(Marker marker) {
-                        //markerClicked(marker);
-                        Toast.makeText(getContext(), "The marker is clicked.", Toast.LENGTH_SHORT).show();
-                    }
-
-
-                });
+//                googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+//                    @Override
+//                    public void onInfoWindowClick(Marker marker) {
+//                        //markerClicked(marker);
+//                        Toast.makeText(getContext(), "The marker is clicked.", Toast.LENGTH_SHORT).show();
+//                    }
+//
+//
+//                });
 
                 // For showing a move to my location button
                 // googleMap.setMyLocationEnabled(true);
