@@ -103,8 +103,6 @@ public class HomeScreen extends AppCompatActivity implements OnFragmentInteracti
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, selectedFragment);
         transaction.commit();
-
-
     }
 
 

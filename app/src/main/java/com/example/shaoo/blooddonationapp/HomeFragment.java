@@ -31,18 +31,18 @@ import java.util.List;
 class CardData{
     String title;
     String description;
-    int photoID;
+    String photoID;
 
-    CardData(String title, String description, int photoID)
+    CardData(String title, String description, String photoID)
     {
         this.title = title;
         this.description = description;
         this.setPhotoID(photoID);
     }
-public int getPhotoID() {
+public String getPhotoID() {
     return photoID;
 }
-public void setPhotoID(int photoID) {
+public void setPhotoID(String photoID) {
     this.photoID = photoID;
 }}
 
@@ -112,26 +112,26 @@ public class HomeFragment extends Fragment {
             queue.add(jsonObjReq);
 
 
-           //  Parsing the json response and rendering it on the screen
-//            try {
-//                if(obj.getString("STATUS") == "FAIL"){
-//                    Toast.makeText(getContext(),"No quotes Retrieved",Toast.LENGTH_LONG).show();
-//                }
-//                else if(obj.getString("STATUS") == "SUCCESS") {
-//                    arr = obj.getJSONArray("DATA");
-//                    int length = obj.length();
-//                    data = new ArrayList<>();
-//                    for(int i=0; i<length; i++) {
-//                        JSONObject jsonObj = arr.getJSONObject(i);
-//                        String image = jsonObj.getString("image");
-//                        String heading = jsonObj.getString("heading");
-//                        String description = jsonObj.getString("description");
-//                        data.add(new CardData(heading,description, Picasso.with(getContext()).load(image)));
-//                    }
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
+           //Parsing the json response and rendering it on the screen
+            try {
+                if(obj.getString("STATUS") == "FAIL"){
+                    Toast.makeText(getContext(),"No quotes Retrieved",Toast.LENGTH_LONG).show();
+                }
+                else if(obj.getString("STATUS") == "SUCCESS") {
+                    arr = obj.getJSONArray("DATA");
+                    int length = obj.length();
+                    data = new ArrayList<>();
+                    for(int i=0; i<length; i++) {
+                        JSONObject jsonObj = arr.getJSONObject(i);
+                        String image = jsonObj.getString("image");
+                        String heading = jsonObj.getString("heading");
+                        String description = jsonObj.getString("description");
+                        data.add(new CardData(heading,description,image));
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -147,7 +147,7 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rv.setLayoutManager(llm);
 
-        RVAdapter adapter = new RVAdapter(data);
+        RVAdapter adapter = new RVAdapter(data, getContext());
         rv.setAdapter(adapter);
 
         return HView;
