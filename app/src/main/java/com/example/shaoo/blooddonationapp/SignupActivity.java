@@ -5,14 +5,20 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -22,6 +28,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -42,8 +50,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 import org.apache.http.NameValuePair;
 import org.json.JSONException;
@@ -61,13 +71,17 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.security.AccessController.getContext;
 
 
-public class SignupActivity extends AppCompatActivity implements android.location.LocationListener {
+public class SignupActivity extends AppCompatActivity implements android.location.LocationListener
+{
 
     public static final String NO_REST = "MY";
     private ProgressDialog pDialog;
     private JSONParser jsonParser=new JSONParser();
+
+    private LoginData data;
 
 
      private EditText Name;
@@ -80,7 +94,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
      private Spinner Gender;
      private Button RegisterButton;
 
-
      private String NameInput;
      private String EmailInput;
      private String PasswordInput;
@@ -89,6 +102,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
      private String DateInput;
      private String GenderInput;
      private String BloodGroupInput;
+     String age;
      //for the image manipulation
      private ImageView img;
      String img_str;
@@ -101,9 +115,12 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
      private CellnoAndMailVerify ClassContainingUrls;
 
      // variables related to the location thingy
-     private Location location;
      private LocationManager locationManager;
      private String provider;
+
+
+    private String Longitude;
+    private String Latitude;
 
 
 
@@ -115,6 +132,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         ClassContainingUrls = new CellnoAndMailVerify();
+        data = new LoginData();
 
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -125,6 +143,8 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
 
         locationManager.requestLocationUpdates(provider, 400, 1, this);
         location = getLastKnownLocationCustom();
+
+
 
 
         Name = (EditText) findViewById(R.id.appCompatEditText2);
@@ -154,6 +174,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
             startActivity(intent);
             finish();
         }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         toolbar.setNavigationIcon(R.drawable.ic_navigate_before_white_36dp);
 
@@ -195,9 +216,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
     }
 
 
-
     public void CheckEverything(View v) throws InterruptedException {
-        Log.i(NO_REST,"1");
         NameInput = Name.getText().toString().trim();
         PasswordInput = Password.getText().toString().trim();
         ContactInput = ContactNumber.getText().toString().trim();
@@ -207,8 +226,9 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         GenderInput = Gender.getSelectedItem().toString().trim();
         BloodGroupInput = BloodGroup.getSelectedItem().toString().trim();
 
-        //Converting the image to the bitmap image
 
+
+        //Converting the image to the bitmap image
         img.buildDrawingCache();
         Bitmap bitmap= img.getDrawingCache();
         ByteArrayOutputStream stream=new ByteArrayOutputStream();
@@ -244,6 +264,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
             Date date1;
             Date date2;
             SimpleDateFormat dates = new SimpleDateFormat("dd-MM-yyyy");
+
             //Setting dates
             date1 = dates.parse(currentDate);
             date2 = dates.parse(DateInput);
@@ -254,9 +275,34 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
 
             //Convert long to String
             String dayDifference = Long.toString(differenceDates);
-            if(Integer.parseInt(dayDifference) < 18) {
+            int year;
+            int month;
+            int days;
+            int weeks;
+            year = 0;
+            month = 0;
+            days = 0;
+            weeks = 0;
+
+            for (int i = 0; i<Integer.parseInt(dayDifference) ;i++ )
+            {
+                if((i %30) == 0)
+                    month++;
+                if((i%7) == 0)
+                    weeks++;
+                if((i%365) == 0)
+                    year++;
+                if((i%1) == 0)
+                    days++;
+            }
+
+
+            if(year < 18) {
                 Toast.makeText(getApplicationContext(), "For Signup you should be above 18", Toast.LENGTH_LONG).show();
                 return;
+            }
+            else{
+                age = Integer.toString(year);
             }
 
         } catch (Exception exception) {
@@ -271,7 +317,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
             return;
         }
 
-
         // checking if the email already exists or not
         String url =  ClassContainingUrls.getEmailURL()+EmailInput;
 
@@ -282,7 +327,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-
                             if(response.getString("STATUS") == "SUCCESS") {
                                 Toast.makeText(getApplicationContext(),"Email Already taken.Please enter a different email",Toast.LENGTH_LONG).show();
                                 return;
@@ -290,7 +334,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                             else {
 
                                 String url1 = ClassContainingUrls.getNumberURL()+ContactInput;
-
+                                checkLocation();
                                 RequestQueue queue1 = Volley.newRequestQueue(getApplicationContext());
                                 JsonObjectRequest req1 = new JsonObjectRequest(Request.Method.GET,url1,null,
                                         new Response.Listener<JSONObject>() {
@@ -305,6 +349,106 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                                                     }
                                                     else {
                                                         Toast.makeText(getApplicationContext(),"Number and mail not existing",Toast.LENGTH_LONG).show();
+                                                        //Toast.makeText(getApplicationContext(),"Latitude : "+latitude+" Longitude : "+longitude,Toast.LENGTH_SHORT).show();
+                                                        locationManager.requestLocationUpdates(provider, 400, 1,SignupActivity.this);
+                                                        location = getLastKnownLocationCustom();
+
+                                                        if(location!=null){
+                                                             //locationManager.requestLocationUpdates(provider, 400, 1,SignupActivity.this);
+
+                                                            locationManager.requestLocationUpdates(provider, 400, 1,SignupActivity.this);
+                                                            location = getLastKnownLocationCustom();
+                                                            DecimalFormat df = new DecimalFormat("##.####");
+                                                            Latitude = df.format(location.getLatitude());
+                                                            Longitude = df.format(location.getLongitude());
+                                                            String RequiredGender ;
+                                                            RequiredGender = "";
+                                                            if (GenderInput == "Male") {
+                                                                Log.i(NO_REST,"Zaroor aya 1");
+                                                                RequiredGender = "1";
+
+                                                            }
+                                                            else if (GenderInput == "Female"){
+                                                                Log.i(NO_REST,"Zaroor aya 2");
+                                                                RequiredGender = "0";
+                                                            }
+
+                                                            // Adding data to the local db and then setting the session
+                                                            data.setImage(img_str);
+                                                            data.setName(NameInput);
+                                                            data.setMail(EmailInput);
+                                                            data.setPassword(PasswordInput);
+                                                            data.setContact(ContactInput);
+                                                            data.setCity(CityInput);
+                                                            data.setAge(age);
+                                                            data.setBloodgroup(BloodGroupInput);
+                                                            data.setGender(GenderInput);
+                                                            data.setLongitude(Longitude);
+                                                            data.setLatitude(Latitude);
+                                                            db.add_user_data(data);
+
+                                                            // setting the login
+                                                            //session.setLogin(true);
+
+                                                            // Now here i ll send all the data to the API
+
+                                                            String requestString;
+                                                            requestString = ClassContainingUrls.getSIGNUP()
+                                                                    +"NAME="+NameInput
+                                                                    +"&EMAIL="+EmailInput
+                                                                    +"&PASSWORD="+PasswordInput
+                                                                    +"&AGE="+age
+                                                                    +"&BLOODGROUP="+BloodGroupInput
+                                                                    +"&GENDER="+RequiredGender
+                                                                    +"&CONTACT="+ContactInput
+                                                                    +"&CITY="+CityInput
+                                                                    +"&LONGI"+Longitude
+                                                                    +"&LATI"+Latitude
+                                                                    +"&AVAILABLE=1"
+                                                                    +"&IMAGE="+img_str;
+
+                                                            Toast.makeText(getApplicationContext(),img_str,Toast.LENGTH_LONG).show();
+                                                            RequestQueue queue3 = Volley.newRequestQueue(getApplicationContext());
+                                                            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
+                                                                    requestString, null, new Response.Listener<JSONObject>() {
+
+                                                                @Override
+                                                                public void onResponse(JSONObject response) {
+                                                                    //Log.d(TAG, response.toString());
+
+                                                                    try {
+                                                                        if(response.getString("STATUS") == "SUCCESS"){
+                                                                            Toast.makeText(getApplicationContext(),"DatasentSucessfully",Toast.LENGTH_LONG).show();
+                                                                            session.setLogin(true);
+                                                                            Intent i = new Intent(SignupActivity.this,HomeScreen.class);
+                                                                            startActivity(i);
+                                                                            finish();
+                                                                        }
+                                                                        else if(response.getString("STATUS") == "FAIL"){
+                                                                            Toast.makeText(getApplicationContext(),"Response is failed.",Toast.LENGTH_LONG).show();
+                                                                        }
+
+                                                                    } catch (JSONException e) {
+                                                                        e.printStackTrace();
+                                                                        Toast.makeText(getApplicationContext(),
+                                                                                "Error in getting response of sent data",
+                                                                                Toast.LENGTH_LONG).show();
+                                                                    }
+                                                                }
+                                                            }, new Response.ErrorListener() {
+
+                                                                @Override
+                                                                public void onErrorResponse(VolleyError error) {
+                                                                    Toast.makeText(getApplicationContext(),
+                                                                            "Error in volley", Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            });
+                                                            queue3.add(jsonObjReq);
+
+                                                        }
+                                                        else{
+                                                            Toast.makeText(getApplicationContext(),"Location is null",Toast.LENGTH_LONG).show();
+                                                        }
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -333,17 +477,100 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         });
         queue.add(req);
     }
-
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(getApplicationContext().CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
+    LocationListener mLocationListener;
+    Location location;
+    double longitude;
+    double latitude;
+    LocationManager mLocationManager;
 
 
+    public void checkLocation() {
+
+        String serviceString = Context.LOCATION_SERVICE;
+        mLocationManager = (LocationManager)getSystemService(serviceString);
 
 
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+
+        mLocationListener = new android.location.LocationListener() {
+            public void onLocationChanged(Location locationListener) {
+
+                if (isGPSEnabled(getApplicationContext())) {
+                    if (locationListener != null) {
+                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            return;
+                        }
+
+                        if (mLocationManager != null) {
+                            location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            if (location != null) {
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
+                            }
+                        }
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(),"Turn On GPS First!",Toast.LENGTH_SHORT).show();
+                    if (isInternetConnected(getApplicationContext())) {
+                        if (mLocationManager != null) {
+                            location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                            if (location != null) {
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            public void onProviderDisabled(String provider) {
+
+            }
+
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+        };
+
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1,mLocationListener);
+    }
+
+
+    public static boolean isInternetConnected(Context ctx) {
+        ConnectivityManager connectivityMgr = (ConnectivityManager) ctx
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connectivityMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mobile = connectivityMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifi != null) {
+            if (wifi.isConnected()) {
+                return true;
+            }
+        }
+        if (mobile != null) {
+            if (mobile.isConnected()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean isGPSEnabled(Context mContext) {
+        LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
 
     public static boolean isEmailValid(String email) {
         String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
@@ -384,7 +611,8 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         }
     }
     @Override
-    public void onLocationChanged(Location location) {}
+    public void onLocationChanged(Location location) {
+    }
     @Override
     public void onStatusChanged(String s, int i, Bundle bundle) {}
     @Override
@@ -412,56 +640,30 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         return bestLocation;
     }
 
-//    @Override
-//    public void processFinish(String output) {
-//        email_number_response_string = output;
-//        Log.i(NO_REST,email_number_response_string);
-//
-//
-//
-//        String[] separated = email_number_response_string.split(" ");
-//        String check1 = separated[0];
-//        String check2 = separated[1];
-//        //Log.i(NO_REST,separated[0]);
-//       // Log.i(NO_REST,separated[1]);
-//        if(check1.equals("SUCCESS") ) {
-//            Toast.makeText(getApplicationContext(),"This email already taken",Toast.LENGTH_LONG).show();
-//            return;
-//        }
-//        if(check2.equals("SUCCESS")) {
-//            Toast.makeText(getApplicationContext(),"This contact no already taken",Toast.LENGTH_LONG).show();
-//            return;
-//        }
-//
-//        if(check1.equals("FAIL"))
-//        {
-//            if(check2.equals("FAIL")) {
-//                Log.i(NO_REST,"agya ander");
-//                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-//                    Toast.makeText(getApplicationContext(),"Email and number successfully verified",Toast.LENGTH_LONG).show();
-//                    locationManager.requestLocationUpdates(provider, 400, 1, this);
-//                    location = getLastKnownLocationCustom();
-//
-//
-//                    if(location != null) {
-//                        Toast.makeText(SignupActivity.this, (int) location.getLatitude(),Toast.LENGTH_LONG).show();
-//                        Toast.makeText(SignupActivity.this,(int) location.getLongitude(),Toast.LENGTH_LONG).show();
-//                    }
-//                    else {
-//                        Toast.makeText(SignupActivity.this,"Location is null.Trying to achieve it",Toast.LENGTH_LONG).show();
-//
-////                        while (location == null) {
-////                            Toast.makeText(SignupActivity.this, "Location not found finding it",Toast.LENGTH_LONG).show();
-////                            locationManager.requestLocationUpdates(provider, 400, 1, this);
-////                            location = getLastKnownLocationCustom();
-////                        }
-//                    }
-//                }else{
-//                    Toast.makeText(SignupActivity.this,"Location not enabled.Please enabled it",Toast.LENGTH_LONG).show();
-//                    return;
-//                }
-//            }
-//        }
-//    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }

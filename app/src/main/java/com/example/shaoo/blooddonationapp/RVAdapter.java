@@ -29,7 +29,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CardViewHolder>{
     public void onBindViewHolder(CardViewHolder holder, int position) {
         holder.title.setText(data.get(position).title);
         holder.description.setText(data.get(position).description);
-        holder.picture.setImageResource(data.get(position).photoID);
+        holder.picture.setImageResource(data.get(position).getPhotoID());
     }
 
     @Override

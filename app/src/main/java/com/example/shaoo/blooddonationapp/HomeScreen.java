@@ -16,17 +16,29 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class HomeScreen extends AppCompatActivity implements OnFragmentInteractionListener {
+
+
 
     Toolbar toolbar;
     Fragment selectedFragment;
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -91,6 +103,8 @@ public class HomeScreen extends AppCompatActivity implements OnFragmentInteracti
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, selectedFragment);
         transaction.commit();
+
+
     }
 
 

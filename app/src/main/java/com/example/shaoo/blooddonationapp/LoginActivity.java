@@ -44,6 +44,8 @@ public class LoginActivity extends AppCompatActivity{
     private SQLiteHandlerClass db;
     private CellnoAndMailVerify ur;
     private LoginData data;
+    Intent i;
+
 
 
 
@@ -159,7 +161,7 @@ public class LoginActivity extends AppCompatActivity{
                                     data.setConclusion(true);
                                     session.setLogin(true);
                                     db.add_user_data(data);
-                                    Intent i  = new Intent(LoginActivity.this,HomeScreen.class);
+                                    i = new Intent(getApplicationContext(),HomeScreen.class);
                                     startActivity(i);
                                     finish();
                                 }

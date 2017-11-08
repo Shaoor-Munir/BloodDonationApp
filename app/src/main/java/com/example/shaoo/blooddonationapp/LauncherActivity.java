@@ -19,20 +19,35 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LauncherActivity extends AppCompatActivity implements OnFragmentInteractionListener {
+    private SessionManager session;
 
     Fragment selectedFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
+
+
+        // Session manager
+        session = new SessionManager(getApplicationContext());
+
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
+
+
+
         selectedFragment = SearchFragment.newInstance(null, "Launcher");
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.content, selectedFragment);
         transaction.commit();
 
+        if(session.isLoggedIn()){
+            Intent intent = new Intent(LauncherActivity.this, HomeScreen.class);
+            startActivity(intent);
+            finish();
+        }
 
     }
 

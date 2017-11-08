@@ -60,23 +60,39 @@ public class SQLiteHandlerClass extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_USER +
-                "(" + KEY_NAME + " TEXT,"
-                + KEY_EMAIL + " TEXT UNINQUE,"
-                + KEY_PASSWORD + " TEXT,"
-                + KEY_CITY + " TEXT,"
-                + KEY_CONTACT + " TEXT UNIQUE,"
-                + KEY_AGE + " INTEGER,"
-                + KEY_GENDER + " INTEGER,"
-                + KEY_LONGITUDE + " REAL,"
-                + KEY_LATITUDE + " REAL,"
-                + KEY_IMAGE + " VARCHAR(100),"
-                + BLOOD_GROUP + " TEXT," + ")";
+//        String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_USER +
+//                "(" + KEY_NAME + " TEXT,"
+//                + KEY_EMAIL + " TEXT UNINQUE,"
+//                + KEY_PASSWORD + " TEXT,"
+//                + KEY_CITY + " TEXT,"
+//                + KEY_CONTACT + " TEXT UNIQUE,"
+//                + KEY_AGE + " INTEGER,"
+//                + KEY_GENDER + " INTEGER,"
+//                + KEY_LONGITUDE + " REAL,"
+//                + KEY_LATITUDE + " REAL,"
+//                + KEY_IMAGE + " VARCHAR(100),"
+//                + BLOOD_GROUP + " TEXT," + ")";
 
 
-        db.execSQL(CREATE_LOGIN_TABLE);
+        db.execSQL(" CREATE TABLE " + TABLE_USER + " (" +
+                KEY_ID + " TEXT PRIMARY KEY, " +
+                KEY_NAME + " TEXT UNIQUE, " +
+                KEY_EMAIL + " TEXT UNIQUE, " +
+                KEY_PASSWORD + " TEXT, " +
+                KEY_CITY + " TEXT, " +
+                KEY_CONTACT + " TEXT, " +
+                KEY_GENDER + " TEXT, " +
+                KEY_LONGITUDE + " TEXT, " +
+                KEY_LATITUDE + " TEXT, " +
+                KEY_IMAGE + " VARCHAR(100), " +
+                BLOOD_GROUP + " TEXT, " +
+                KEY_AGE + " TEXT);"
+        );
 
-        Log.d(TAG, "Database table named UserData created");
+
+        //db.execSQL(CREATE_LOGIN_TABLE);
+
+        Log.i(TAG, "Database table named UserData created");
     }
 
     @Override
