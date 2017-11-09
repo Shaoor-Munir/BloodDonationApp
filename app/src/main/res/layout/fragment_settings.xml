@@ -4,10 +4,98 @@
     android:layout_height="match_parent"
     tools:context="com.example.shaoo.blooddonationapp.SettingsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/title_settings" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/EditProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="11dp"
+                android:layout_marginStart="11dp"
+                android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:onClick="EditProfile"
+                android:paddingBottom="10dp"
+                android:text="Edit My Profile"
+                android:textSize="18sp"
+                tools:ignore="OnClick" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#FF909090" />
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/PrivacyPolicy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="11dp"
+                android:layout_marginStart="11dp"
+                android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:paddingBottom="10dp"
+                android:text="Privacy Policy"
+                android:textSize="18sp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#FF909090" />
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/Terms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="11dp"
+                android:layout_marginStart="11dp"
+                android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:paddingBottom="10dp"
+                android:text="Terms of Service"
+                android:textSize="18sp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#FF909090" />
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/Donate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="11dp"
+                android:layout_marginStart="11dp"
+                android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:paddingBottom="10dp"
+                android:text="Donate A Book"
+                android:textSize="18sp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#FF909090" />
+
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/Logout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="11dp"
+                android:layout_marginStart="11dp"
+                android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:paddingBottom="10dp"
+                android:text="Log Out"
+                android:textSize="18sp" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#FF909090" />
+        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
 </FrameLayout>

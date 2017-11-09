@@ -39,7 +39,10 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CardViewHolder>{
 
     @Override
     public int getItemCount() {
-        return data.size();
+        if (data != null)
+            return data.size();
+        else
+            return 0;
     }
 
     public static class CardViewHolder extends RecyclerView.ViewHolder {

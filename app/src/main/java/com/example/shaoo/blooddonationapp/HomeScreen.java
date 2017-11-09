@@ -1,5 +1,6 @@
 package com.example.shaoo.blooddonationapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
@@ -8,11 +9,16 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EdgeEffect;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +36,8 @@ import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class HomeScreen extends AppCompatActivity implements OnFragmentInteractionListener {
 
@@ -117,5 +125,37 @@ public class HomeScreen extends AppCompatActivity implements OnFragmentInteracti
 
     public void ShareClicked(View view) {
         Toast.makeText(this, "Share Clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    public void EditProfile(View view) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.custom_dialog_layout, null);
+        dialogBuilder.setView(dialogView);
+
+        final EditText name = (EditText) dialogView.findViewById(R.id.EditNameField);
+        final EditText city = (EditText) dialogView.findViewById(R.id.EditCityField);
+        final EditText number = (EditText) dialogView.findViewById(R.id.EditNumberField);
+        final Spinner bloodType = (Spinner) dialogView.findViewById(R.id.EditBloodType);
+        final CircleImageView profile = (CircleImageView)dialogView.findViewById(R.id.EditProfilePicture);
+
+        dialogBuilder.setTitle("Edit Profile");
+        dialogBuilder.setMessage("Update information below");
+
+        dialogBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(), "Information has been successfully updated", Toast.LENGTH_SHORT).show();
+            }
+        });
+        dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(), "Information was not updated", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        AlertDialog b = dialogBuilder.create();
+        b.show();
     }
 }
