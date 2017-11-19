@@ -9,6 +9,7 @@ import android.content.Context;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -16,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -49,6 +51,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -67,63 +70,65 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.security.AccessController.getContext;
 
 
-public class SignupActivity extends AppCompatActivity implements android.location.LocationListener
-{
+public class SignupActivity extends AppCompatActivity implements android.location.LocationListener {
 
     public static final String NO_REST = "MY";
     private ProgressDialog pDialog;
-    private JSONParser jsonParser=new JSONParser();
+    private JSONParser jsonParser = new JSONParser();
 
     private LoginData data;
 
 
-     private EditText Name;
-     private EditText EmailAddress;
-     private EditText Password;
-     private EditText ContactNumber;
-     private EditText City;
-     private EditText Date1; //Date of birth
-     private Spinner BloodGroup;
-     private Spinner Gender;
-     private Button RegisterButton;
+    private EditText Name;
+    private EditText EmailAddress;
+    private EditText Password;
+    private EditText ContactNumber;
+    private EditText City;
+    private EditText Date1; //Date of birth
+    private Spinner BloodGroup;
+    private Spinner Gender;
+    private Button RegisterButton;
 
-     private String NameInput;
-     private String EmailInput;
-     private String PasswordInput;
-     private String ContactInput;
-     private String CityInput;
-     private String DateInput;
-     private String GenderInput;
-     private String BloodGroupInput;
-     String age;
-     //for the image manipulation
-     private ImageView img;
-     String img_str;
+    private String NameInput;
+    private String EmailInput;
+    private String PasswordInput;
+    private String ContactInput;
+    private String CityInput;
+    private String DateInput;
+    private String GenderInput;
+    private String BloodGroupInput;
+    String age;
+    //for the image manipulation
+    private ImageView img;
+    String img_str;
 
-     private SignUpdata sigupData;
+    private SignUpdata sigupData;
 
-     private SessionManager session;
-     private SQLiteHandlerClass db;
+    private SessionManager session;
+    private SQLiteHandlerClass db;
 
-     private CellnoAndMailVerify ClassContainingUrls;
+    private CellnoAndMailVerify ClassContainingUrls;
 
-     // variables related to the location thingy
-     private LocationManager locationManager;
-     private String provider;
+    // variables related to the location thingy
+    private LocationManager locationManager;
+    private String provider;
 
 
     private String Longitude;
     private String Latitude;
 
+    String RequiredGender ;
 
-
+    private JSONObject jsonObj;
 
 
 
@@ -145,8 +150,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         location = getLastKnownLocationCustom();
 
 
-
-
         Name = (EditText) findViewById(R.id.appCompatEditText2);
         Password = (EditText) findViewById(R.id.appCompatEditText3);
         ContactNumber = (EditText) findViewById(R.id.appCompatEditText4);
@@ -159,12 +162,15 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         img = (ImageView) findViewById(R.id.Profile);
 
 
-
         // Session manager
         session = new SessionManager(getApplicationContext());
 
         //SQLite database handler
         db = new SQLiteHandlerClass(getApplicationContext());
+
+        // creating the JSON object
+
+        jsonObj = new JSONObject();
 
         // Check if user is already logged in or not
         if (session.isLoggedIn()) {
@@ -181,10 +187,9 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"Clicked back button",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Clicked back button", Toast.LENGTH_SHORT).show();
             }
         });
-
 
 
         final Calendar c = Calendar.getInstance();
@@ -200,7 +205,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     DatePickerDialog datePickerDialog = new DatePickerDialog(SignupActivity.this, android.R.style.Theme_Holo_Dialog, new DatePickerDialog.OnDateSetListener() {
                         @Override
                         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -227,18 +232,24 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         BloodGroupInput = BloodGroup.getSelectedItem().toString().trim();
 
 
+        Bitmap image = ((BitmapDrawable) img.getDrawable()).getBitmap();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        img_str = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
+
+
 
         //Converting the image to the bitmap image
-        img.buildDrawingCache();
-        Bitmap bitmap= img.getDrawingCache();
-        ByteArrayOutputStream stream=new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream);
-        byte[] image=stream.toByteArray();
-        img_str = Base64.encodeToString(image, 0);
+//        img.buildDrawingCache();
+//        Bitmap bitmap = img.getDrawingCache();
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//        bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream);
+//        final byte[] image = stream.toByteArray();
+//        img_str = Base64.encodeToString(image, 0);
 
         // checking if some field is empty or not
         // if yes then display the toast and return to app
-        if(NameInput.matches("") || PasswordInput.matches("")
+        if (NameInput.matches("") || PasswordInput.matches("")
                 || ContactInput.matches("") ||
                 EmailInput.matches("") || CityInput.matches("")
                 || DateInput.matches("")) {
@@ -248,8 +259,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
 
 
         //Prompting the user to enter the correct email
-        if(isEmailValid(EmailInput) == false)
-        {
+        if (isEmailValid(EmailInput) == false) {
             Toast.makeText(getApplicationContext(), "Please enter the correct email format", Toast.LENGTH_LONG).show();
             return;
         }
@@ -284,24 +294,22 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
             days = 0;
             weeks = 0;
 
-            for (int i = 0; i<Integer.parseInt(dayDifference) ;i++ )
-            {
-                if((i %30) == 0)
+            for (int i = 0; i < Integer.parseInt(dayDifference); i++) {
+                if ((i % 30) == 0)
                     month++;
-                if((i%7) == 0)
+                if ((i % 7) == 0)
                     weeks++;
-                if((i%365) == 0)
+                if ((i % 365) == 0)
                     year++;
-                if((i%1) == 0)
+                if ((i % 1) == 0)
                     days++;
             }
 
 
-            if(year < 18) {
+            if (year < 18) {
                 Toast.makeText(getApplicationContext(), "For Signup you should be above 18", Toast.LENGTH_LONG).show();
                 return;
-            }
-            else{
+            } else {
                 age = Integer.toString(year);
             }
 
@@ -310,47 +318,46 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         }
 
 
-
         // Checking the internet connection
-        if(isNetworkAvailable() == false) {
-            Toast.makeText(SignupActivity.this,"Please switched on the network",Toast.LENGTH_LONG).show();
+        if (isNetworkAvailable() == false) {
+            Toast.makeText(SignupActivity.this, "Please switched on the network", Toast.LENGTH_LONG).show();
             return;
         }
 
         // checking if the email already exists or not
-        String url =  ClassContainingUrls.getEmailURL()+EmailInput;
+        String url = ClassContainingUrls.getEmailURL() + EmailInput;
 
         // Sending the request via the volley
         RequestQueue queue = Volley.newRequestQueue(this);
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,url,null,
+        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            if(response.getString("STATUS") == "SUCCESS") {
-                                Toast.makeText(getApplicationContext(),"Email Already taken.Please enter a different email",Toast.LENGTH_LONG).show();
+                            if (response.getString("STATUS") == "SUCCESS") {
+                                Toast.makeText(getApplicationContext(), "Email Already taken.Please enter a different email", Toast.LENGTH_LONG).show();
                                 return;
-                            }
-                            else {
+                            } else {
 
-                                String url1 = ClassContainingUrls.getNumberURL()+ContactInput;
+                                String url1 = ClassContainingUrls.getNumberURL() + ContactInput;
                                 checkLocation();
                                 RequestQueue queue1 = Volley.newRequestQueue(getApplicationContext());
-                                JsonObjectRequest req1 = new JsonObjectRequest(Request.Method.GET,url1,null,
+                                JsonObjectRequest req1 = new JsonObjectRequest(Request.Method.GET, url1, null,
                                         new Response.Listener<JSONObject>() {
                                             @Override
                                             public void onResponse(JSONObject response) {
                                                 try {
 
-                                                    if(response.getString("STATUS") == "SUCCESS") {
-                                                        Toast.makeText(getApplicationContext(),"Phone no already " +
-                                                                "taken.Please Enter different",Toast.LENGTH_LONG).show();
+                                                    if (response.getString("STATUS") == "SUCCESS") {
+                                                        Toast.makeText(getApplicationContext(), "Phone no already " +
+                                                                "taken.Please Enter different", Toast.LENGTH_LONG).show();
                                                         return;
-                                                    }
-                                                    else {
-                                                        Toast.makeText(getApplicationContext(),"Number and mail not existing",Toast.LENGTH_LONG).show();
-                                                        //Toast.makeText(getApplicationContext(),"Latitude : "+latitude+" Longitude : "+longitude,Toast.LENGTH_SHORT).show();
-                                                        locationManager.requestLocationUpdates(provider, 400, 1,SignupActivity.this);
+                                                    } else {
+                                                        Toast.makeText(getApplicationContext(), "Number and mail not existing", Toast.LENGTH_LONG).show();
+                                                        if (ActivityCompat.checkSelfPermission(SignupActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(SignupActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                                            return;
+                                                        }
+                                                        locationManager.requestLocationUpdates(provider, 400, 1, SignupActivity.this);
                                                         location = getLastKnownLocationCustom();
 
                                                         if(location!=null){
@@ -361,7 +368,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                                                             DecimalFormat df = new DecimalFormat("##.####");
                                                             Latitude = df.format(location.getLatitude());
                                                             Longitude = df.format(location.getLongitude());
-                                                            String RequiredGender ;
                                                             RequiredGender = "";
                                                             if (GenderInput == "Male") {
                                                                 Log.i(NO_REST,"Zaroor aya 1");
@@ -387,63 +393,194 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                                                             data.setLatitude(Latitude);
                                                             db.add_user_data(data);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//                                                            RequestQueue queue = Volley.newRequestQueue(SignupActivity.this);
+//
+//
+//                                                            StringRequest sr = new StringRequest(Request.Method.POST,ClassContainingUrls.getSIGNUP(), new Response.Listener<String>() {
+//                                                                @Override
+//                                                                public void onResponse(String response) {
+//
+//
+//                                                                }
+//                                                            }, new Response.ErrorListener() {
+//                                                                @Override
+//                                                                public void onErrorResponse(VolleyError error) {
+//
+//                                                                }
+//                                                            }){
+//                                                                @Override
+//                                                                protected Map<String,String> getParams(){
+//                                                                    Map<String,String> params = new HashMap<String, String>();
+//                                                                    params.put("NAME", NameInput);
+//                                                                    params.put("EMAIL",EmailInput);
+//                                                                    params.put("PASSWORD",PasswordInput);
+//                                                                    params.put("AGE",age);
+//                                                                    params.put("BLOODGROUP",BloodGroupInput);
+//                                                                    params.put("GENDER",GenderInput);
+//                                                                    params.put("CONTACT",RequiredGender);
+//                                                                    params.put("CITY",CityInput);
+//                                                                    params.put("LONGI",Longitude);
+//                                                                    params.put("LATI",Latitude);
+//                                                                    params.put("AVAILABLE","1");
+//                                                                    params.put("IMAGE",img_str);
+//                                                                    return params;
+//                                                                }
+//                                                            };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                            //String URL = ClassContainingUrls.getSIGNUP();
+                                                            // Post params to be sent to the server
+
+
+//                                                            HashMap<String, String> params = new HashMap<String, String>();
+//                                                            params.put("NAME", NameInput);
+//                                                            params.put("EMAIL",EmailInput);
+//                                                            params.put("PASSWORD",PasswordInput);
+//                                                            params.put("AGE",age);
+//                                                            params.put("BLOODGROUP",BloodGroupInput);
+//                                                            params.put("GENDER",GenderInput);
+//                                                            params.put("CONTACT",RequiredGender);
+//                                                            params.put("CITY",CityInput);
+//                                                            params.put("LONGI",Longitude);
+//                                                            params.put("LATI",Latitude);
+//                                                            params.put("AVAILABLE","1");
+//                                                            params.put("IMAGE",img_str);
+
+
+
+//                                                            RequestQueue que = Volley.newRequestQueue(getApplicationContext());
+//                                                            JsonObjectRequest req1 = new JsonObjectRequest(URL, new JSONObject(params),
+//                                                                    new Response.Listener<JSONObject>() {
+//                                                                        @Override
+//                                                                        public void onResponse(JSONObject response) {
+//                                                                            try {
+//                                                                                String res = response.getString("STATUS");
+//                                                                                Toast.makeText(SignupActivity.this,res,Toast.LENGTH_LONG).show();
+//                                                                                Toast.makeText(SignupActivity.this,"a big success",Toast.LENGTH_LONG).show();
+//
+//                                                                            } catch (JSONException e) {
+//                                                                                Toast.makeText(SignupActivity.this,"entered into catch",Toast.LENGTH_LONG).show();
+//                                                                                e.printStackTrace();
+//                                                                            }
+//                                                                        }
+//                                                                    }, new Response.ErrorListener() {
+//                                                                @Override
+//                                                                public void onErrorResponse(VolleyError error) {
+//                                                                    Toast.makeText(SignupActivity.this,"Again the error is in volley",Toast.LENGTH_LONG).show();
+//                                                                }
+//                                                            });
+//
+//                                                            // add the request object to the queue to be executed
+//                                                            que.add(req1);
+
+
                                                             // setting the login
                                                             //session.setLogin(true);
 
                                                             // Now here i ll send all the data to the API
 
-                                                            String requestString;
-                                                            requestString = ClassContainingUrls.getSIGNUP()
-                                                                    +"NAME="+NameInput
-                                                                    +"&EMAIL="+EmailInput
-                                                                    +"&PASSWORD="+PasswordInput
-                                                                    +"&AGE="+age
-                                                                    +"&BLOODGROUP="+BloodGroupInput
-                                                                    +"&GENDER="+RequiredGender
-                                                                    +"&CONTACT="+ContactInput
-                                                                    +"&CITY="+CityInput
-                                                                    +"&LONGI"+Longitude
-                                                                    +"&LATI"+Latitude
-                                                                    +"&AVAILABLE=1"
-                                                                    +"&IMAGE="+img_str;
+//                                                            String requestString;
+//                                                            requestString = ClassContainingUrls.getSIGNUP()
+//                                                                    +"NAME="+NameInput
+//                                                                    +"&EMAIL="+EmailInput
+//                                                                    +"&PASSWORD="+PasswordInput
+//                                                                    +"&AGE="+age
+//                                                                    +"&BLOODGROUP="+BloodGroupInput
+//                                                                    +"&GENDER="+RequiredGender
+//                                                                    +"&CONTACT="+ContactInput
+//                                                                    +"&CITY="+CityInput
+//                                                                    +"&LONGI"+Longitude
+//                                                                    +"&LATI"+Latitude
+//                                                                    +"&AVAILABLE=1"
+//                                                                    +"&IMAGE="+img_str;
 
-                                                            Toast.makeText(getApplicationContext(),img_str,Toast.LENGTH_LONG).show();
-                                                            RequestQueue queue3 = Volley.newRequestQueue(getApplicationContext());
-                                                            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
-                                                                    requestString, null, new Response.Listener<JSONObject>() {
-
-                                                                @Override
-                                                                public void onResponse(JSONObject response) {
-                                                                    //Log.d(TAG, response.toString());
-
-                                                                    try {
-                                                                        if(response.getString("STATUS") == "SUCCESS"){
-                                                                            Toast.makeText(getApplicationContext(),"DatasentSucessfully",Toast.LENGTH_LONG).show();
-                                                                            session.setLogin(true);
-                                                                            Intent i = new Intent(SignupActivity.this,HomeScreen.class);
-                                                                            startActivity(i);
-                                                                            finish();
-                                                                        }
-                                                                        else if(response.getString("STATUS") == "FAIL"){
-                                                                            Toast.makeText(getApplicationContext(),"Response is failed.",Toast.LENGTH_LONG).show();
-                                                                        }
-
-                                                                    } catch (JSONException e) {
-                                                                        e.printStackTrace();
-                                                                        Toast.makeText(getApplicationContext(),
-                                                                                "Error in getting response of sent data",
-                                                                                Toast.LENGTH_LONG).show();
-                                                                    }
-                                                                }
-                                                            }, new Response.ErrorListener() {
-
-                                                                @Override
-                                                                public void onErrorResponse(VolleyError error) {
-                                                                    Toast.makeText(getApplicationContext(),
-                                                                            "Error in volley", Toast.LENGTH_SHORT).show();
-                                                                }
-                                                            });
-                                                            queue3.add(jsonObjReq);
+//                                                            Toast.makeText(getApplicationContext(),img_str,Toast.LENGTH_LONG).show();
+//                                                            RequestQueue queue3 = Volley.newRequestQueue(getApplicationContext());
+//                                                            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
+//                                                                    requestString, null, new Response.Listener<JSONObject>() {
+//
+//                                                                @Override
+//                                                                public void onResponse(JSONObject response) {
+//                                                                    //Log.d(TAG, response.toString());
+//
+//                                                                    try {
+//                                                                        if(response.getString("STATUS") == "SUCCESS"){
+//                                                                            Toast.makeText(getApplicationContext(),"DatasentSucessfully",Toast.LENGTH_LONG).show();
+//                                                                            session.setLogin(true);
+//                                                                            Intent i = new Intent(SignupActivity.this,HomeScreen.class);
+//                                                                            startActivity(i);
+//                                                                            finish();
+//                                                                        }
+//                                                                        else if(response.getString("STATUS") == "FAIL"){
+//                                                                            Toast.makeText(getApplicationContext(),"Response is failed.",Toast.LENGTH_LONG).show();
+//                                                                        }
+//
+//                                                                    } catch (JSONException e) {
+//                                                                        e.printStackTrace();
+//                                                                        Toast.makeText(getApplicationContext(),
+//                                                                                "Error in getting response of sent data",
+//                                                                                Toast.LENGTH_LONG).show();
+//                                                                    }
+//                                                                }
+//                                                            }, new Response.ErrorListener() {
+//
+//                                                                @Override
+//                                                                public void onErrorResponse(VolleyError error) {
+//                                                                    Toast.makeText(getApplicationContext(),
+//                                                                            "Error in volley", Toast.LENGTH_SHORT).show();
+//                                                                }
+//                                                            });
+//                                                            queue3.add(jsonObjReq);
 
                                                         }
                                                         else{
@@ -457,7 +594,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                                         }, new Response.ErrorListener() {
                                     @Override
                                     public void onErrorResponse(VolleyError error) {
-                                        Toast.makeText(getApplicationContext(),"Error Occured while sending the data",Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getApplicationContext(),"Error Occured while sending the data1",Toast.LENGTH_LONG).show();
                                         return;
                                     }
                                 });
@@ -471,7 +608,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(),"Error Occured while sending the data",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"Error Occured while sending the data2",Toast.LENGTH_LONG).show();
                 return;
             }
         });

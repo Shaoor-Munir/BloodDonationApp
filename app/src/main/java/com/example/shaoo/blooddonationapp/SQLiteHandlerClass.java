@@ -23,7 +23,7 @@ public class SQLiteHandlerClass extends SQLiteOpenHelper {
 
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
 
 
@@ -154,3 +154,101 @@ public class SQLiteHandlerClass extends SQLiteOpenHelper {
         Log.d(TAG, "Deleted all user info from sqlite");
     }
 }
+
+
+
+
+/*
+public void makeJsonObjectRequestPest() {
+        showpDialog();
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Method.GET,
+                urlJsonObj, null, new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d(TAG, response.toString());
+
+                try {
+                    //json object points to status and data. Data points to an array
+                    // Parsing json object response
+                    // response will be a json object
+
+                    JSONArray temps = response.getJSONArray("DATA");
+                    //Toast.makeText(getApplicationContext(), temps.toString(), Toast.LENGTH_SHORT).show();
+
+                    int count = 0;
+                    jsonResponse = "";
+                    for (int i = 0; i < temps.length(); i++) {
+
+                        JSONObject person = (JSONObject) temps.get(i);
+
+                        String name = person.getString("id");
+                        String email = person.getString("pest_name");
+                        String mobile = person.getString("time_stamp");
+
+                        jsonResponse += "id: " + name + "\n\n";
+                        jsonResponse += "pest_name: " + email + "\n\n";
+                        jsonResponse += "time_stamp: " + mobile + "\n\n";
+
+                    }
+
+                    txtResponse.setText(jsonResponse);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),
+                            "Error: " + e.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+                hidepDialog();
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        error.getMessage(), Toast.LENGTH_SHORT).show();
+                // hide the progress dialog
+                hidepDialog();
+            }
+        });
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(jsonObjReq);
+    }
+
+//above method is to make a json object, use your parameters instead of above
+
+public void UploadPestThroughVolley(){
+        String  tag_string_req = "string_req";
+        String url = "http://sundarsharif.com/pestcontrol/servercontroller.php?REQUEST_TYPE=DATACOLLECTION&tt_id=1&user=1&count=12&dummyField1=aa&dummyField2=bb&dummyField3=cc&latitude=123&longitude=321&image=abcd";
+        String linktohit = "http://sundarsharif.com/pestcontrol/servercontroller.php?REQUEST_TYPE=INSERTPESTS&pest_name=";
+        String name = "name";
+        linktohit = linktohit + name;
+        String image = "temp";
+        String imagepath = "&pest_image=";
+        linktohit = linktohit + imagepath + image;
+
+        StringRequest strReq = new StringRequest(Method.POST, url, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.d(TAG, response.toString());
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+            }
+        });
+
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+    }
+
+*/

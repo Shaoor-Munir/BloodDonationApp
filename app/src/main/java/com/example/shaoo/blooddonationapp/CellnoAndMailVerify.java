@@ -5,7 +5,7 @@ public class CellnoAndMailVerify {
     public static String CHECK_PHONE = "http://sundarsharif.com/onebloodAPIs/server/servercontroller.php?REQUEST_TYPE=CHECKPHONE&PHONE=";
 
     public static String LOGIN = "http://sundarsharif.com/onbloodtest/servercontroller.php?REQUEST_TYPE=LOGIN&";
-    public static String SIGNUP = "http://sundarsharif.com/onbloodtest/servercontroller.php?REQUEST_TYPE=SIGNUP&";
+    public static String SIGNUP = "http://sundarsharif.com/onbloodtest/servercontroller.php";
 
     public static String getUsersNearby(double lng, double lat, String bld) {
         return "http://sundarsharif.com/onbloodtest/servercontroller.php?REQUEST_TYPE=FINDBLOOD&BLOODG=" + bld + "&LAT1=" + lat + "&LON1=" + lng;
