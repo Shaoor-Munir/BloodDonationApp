@@ -44,8 +44,10 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TabHost;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -126,10 +128,9 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
     private String Longitude;
     private String Latitude;
 
-    String RequiredGender ;
+    String RequiredGender;
 
     private JSONObject jsonObj;
-
 
 
     @Override
@@ -234,9 +235,8 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
 
         Bitmap image = ((BitmapDrawable) img.getDrawable()).getBitmap();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        image.compress(Bitmap.CompressFormat.JPEG, 10, byteArrayOutputStream);
         img_str = Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT);
-
 
 
         //Converting the image to the bitmap image
@@ -360,26 +360,32 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                                                         locationManager.requestLocationUpdates(provider, 400, 1, SignupActivity.this);
                                                         location = getLastKnownLocationCustom();
 
-                                                        if(location!=null){
-                                                             //locationManager.requestLocationUpdates(provider, 400, 1,SignupActivity.this);
+                                                        if (location != null) {
+                                                            //locationManager.requestLocationUpdates(provider, 400, 1,SignupActivity.this);
 
-                                                            locationManager.requestLocationUpdates(provider, 400, 1,SignupActivity.this);
+                                                            locationManager.requestLocationUpdates(provider, 400, 1, SignupActivity.this);
                                                             location = getLastKnownLocationCustom();
                                                             DecimalFormat df = new DecimalFormat("##.####");
                                                             Latitude = df.format(location.getLatitude());
                                                             Longitude = df.format(location.getLongitude());
                                                             RequiredGender = "";
                                                             if (GenderInput == "Male") {
-                                                                Log.i(NO_REST,"Zaroor aya 1");
+                                                                Log.i(NO_REST, "Zaroor aya 1");
                                                                 RequiredGender = "1";
 
-                                                            }
-                                                            else if (GenderInput == "Female"){
-                                                                Log.i(NO_REST,"Zaroor aya 2");
+                                                            } else if (GenderInput == "Female") {
+                                                                Log.i(NO_REST, "Zaroor aya 2");
                                                                 RequiredGender = "0";
                                                             }
 
+                                                            session.setLogin(true);
+
+                                                            //db.deleteUsers();
+
                                                             // Adding data to the local db and then setting the session
+
+
+                                                            Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_LONG).show();
                                                             data.setImage(img_str);
                                                             data.setName(NameInput);
                                                             data.setMail(EmailInput);
@@ -391,200 +397,74 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                                                             data.setGender(GenderInput);
                                                             data.setLongitude(Longitude);
                                                             data.setLatitude(Latitude);
-                                                            db.add_user_data(data);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//                                                            RequestQueue queue = Volley.newRequestQueue(SignupActivity.this);
-//
-//
-//                                                            StringRequest sr = new StringRequest(Request.Method.POST,ClassContainingUrls.getSIGNUP(), new Response.Listener<String>() {
-//                                                                @Override
-//                                                                public void onResponse(String response) {
-//
-//
-//                                                                }
-//                                                            }, new Response.ErrorListener() {
-//                                                                @Override
-//                                                                public void onErrorResponse(VolleyError error) {
-//
-//                                                                }
-//                                                            }){
-//                                                                @Override
-//                                                                protected Map<String,String> getParams(){
-//                                                                    Map<String,String> params = new HashMap<String, String>();
-//                                                                    params.put("NAME", NameInput);
-//                                                                    params.put("EMAIL",EmailInput);
-//                                                                    params.put("PASSWORD",PasswordInput);
-//                                                                    params.put("AGE",age);
-//                                                                    params.put("BLOODGROUP",BloodGroupInput);
-//                                                                    params.put("GENDER",GenderInput);
-//                                                                    params.put("CONTACT",RequiredGender);
-//                                                                    params.put("CITY",CityInput);
-//                                                                    params.put("LONGI",Longitude);
-//                                                                    params.put("LATI",Latitude);
-//                                                                    params.put("AVAILABLE","1");
-//                                                                    params.put("IMAGE",img_str);
-//                                                                    return params;
-//                                                                }
-//                                                            };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                                                            //String URL = ClassContainingUrls.getSIGNUP();
-                                                            // Post params to be sent to the server
-
-
-//                                                            HashMap<String, String> params = new HashMap<String, String>();
-//                                                            params.put("NAME", NameInput);
-//                                                            params.put("EMAIL",EmailInput);
-//                                                            params.put("PASSWORD",PasswordInput);
-//                                                            params.put("AGE",age);
-//                                                            params.put("BLOODGROUP",BloodGroupInput);
-//                                                            params.put("GENDER",GenderInput);
-//                                                            params.put("CONTACT",RequiredGender);
-//                                                            params.put("CITY",CityInput);
-//                                                            params.put("LONGI",Longitude);
-//                                                            params.put("LATI",Latitude);
-//                                                            params.put("AVAILABLE","1");
-//                                                            params.put("IMAGE",img_str);
-
-
-
-//                                                            RequestQueue que = Volley.newRequestQueue(getApplicationContext());
-//                                                            JsonObjectRequest req1 = new JsonObjectRequest(URL, new JSONObject(params),
-//                                                                    new Response.Listener<JSONObject>() {
-//                                                                        @Override
-//                                                                        public void onResponse(JSONObject response) {
-//                                                                            try {
-//                                                                                String res = response.getString("STATUS");
-//                                                                                Toast.makeText(SignupActivity.this,res,Toast.LENGTH_LONG).show();
-//                                                                                Toast.makeText(SignupActivity.this,"a big success",Toast.LENGTH_LONG).show();
-//
-//                                                                            } catch (JSONException e) {
-//                                                                                Toast.makeText(SignupActivity.this,"entered into catch",Toast.LENGTH_LONG).show();
-//                                                                                e.printStackTrace();
-//                                                                            }
-//                                                                        }
-//                                                                    }, new Response.ErrorListener() {
-//                                                                @Override
-//                                                                public void onErrorResponse(VolleyError error) {
-//                                                                    Toast.makeText(SignupActivity.this,"Again the error is in volley",Toast.LENGTH_LONG).show();
-//                                                                }
-//                                                            });
-//
-//                                                            // add the request object to the queue to be executed
-//                                                            que.add(req1);
-
-
-                                                            // setting the login
-                                                            //session.setLogin(true);
-
-                                                            // Now here i ll send all the data to the API
-
-//                                                            String requestString;
-//                                                            requestString = ClassContainingUrls.getSIGNUP()
-//                                                                    +"NAME="+NameInput
-//                                                                    +"&EMAIL="+EmailInput
-//                                                                    +"&PASSWORD="+PasswordInput
-//                                                                    +"&AGE="+age
-//                                                                    +"&BLOODGROUP="+BloodGroupInput
-//                                                                    +"&GENDER="+RequiredGender
-//                                                                    +"&CONTACT="+ContactInput
-//                                                                    +"&CITY="+CityInput
-//                                                                    +"&LONGI"+Longitude
-//                                                                    +"&LATI"+Latitude
-//                                                                    +"&AVAILABLE=1"
-//                                                                    +"&IMAGE="+img_str;
-
-//                                                            Toast.makeText(getApplicationContext(),img_str,Toast.LENGTH_LONG).show();
-//                                                            RequestQueue queue3 = Volley.newRequestQueue(getApplicationContext());
-//                                                            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
-//                                                                    requestString, null, new Response.Listener<JSONObject>() {
-//
-//                                                                @Override
-//                                                                public void onResponse(JSONObject response) {
-//                                                                    //Log.d(TAG, response.toString());
-//
-//                                                                    try {
-//                                                                        if(response.getString("STATUS") == "SUCCESS"){
-//                                                                            Toast.makeText(getApplicationContext(),"DatasentSucessfully",Toast.LENGTH_LONG).show();
-//                                                                            session.setLogin(true);
-//                                                                            Intent i = new Intent(SignupActivity.this,HomeScreen.class);
-//                                                                            startActivity(i);
-//                                                                            finish();
-//                                                                        }
-//                                                                        else if(response.getString("STATUS") == "FAIL"){
-//                                                                            Toast.makeText(getApplicationContext(),"Response is failed.",Toast.LENGTH_LONG).show();
-//                                                                        }
-//
-//                                                                    } catch (JSONException e) {
-//                                                                        e.printStackTrace();
-//                                                                        Toast.makeText(getApplicationContext(),
-//                                                                                "Error in getting response of sent data",
-//                                                                                Toast.LENGTH_LONG).show();
-//                                                                    }
-//                                                                }
-//                                                            }, new Response.ErrorListener() {
-//
-//                                                                @Override
-//                                                                public void onErrorResponse(VolleyError error) {
-//                                                                    Toast.makeText(getApplicationContext(),
-//                                                                            "Error in volley", Toast.LENGTH_SHORT).show();
-//                                                                }
-//                                                            });
-//                                                            queue3.add(jsonObjReq);
-
-                                                        }
-                                                        else{
-                                                            Toast.makeText(getApplicationContext(),"Location is null",Toast.LENGTH_LONG).show();
+                                                        //    db.add_user_data(data);
+                                                            Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_LONG).show();
+
+                                                            try {
+                                                                Toast.makeText(getApplicationContext(), "3", Toast.LENGTH_LONG).show();
+                                                                jsonObj.put("REQUEST_TYPE", "SIGNUP");
+                                                                jsonObj.put("NAME", NameInput);
+                                                                jsonObj.put("EMAIL", EmailInput);
+                                                                jsonObj.put("PASSWORD", PasswordInput);
+                                                                jsonObj.put("AGE", age);
+                                                                jsonObj.put("BLOODGROUP", BloodGroupInput);
+                                                                jsonObj.put("GENDER", GenderInput);
+                                                                jsonObj.put("CONTACT", RequiredGender);
+                                                                jsonObj.put("CITY", CityInput);
+                                                                jsonObj.put("LONGI", Longitude);
+                                                                jsonObj.put("LATI", Latitude);
+                                                                jsonObj.put("AVAILABLE", "1");
+                                                                jsonObj.put("IMAGE", "noimage");
+                                                                Toast.makeText(getApplicationContext(), "4", Toast.LENGTH_LONG).show();
+
+                                                            } catch (JSONException e) {
+                                                                Toast.makeText(SignupActivity.this, "Json object error", Toast.LENGTH_LONG).show();
+                                                            }
+
+                                                            Toast.makeText(getApplicationContext(), "5", Toast.LENGTH_LONG).show();
+                                                            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, ClassContainingUrls.getSIGNUP(), jsonObj,
+                                                                    new Response.Listener<JSONObject>() {
+                                                                        @Override
+                                                                        public void onResponse(JSONObject jsonObject) {
+                                                                            Log.i(" volley response :",""+jsonObject.toString());
+                                                                            Toast.makeText(getApplicationContext(), "6", Toast.LENGTH_LONG).show();
+
+                                                                            try {
+                                                                                Toast.makeText(getApplicationContext(), "7", Toast.LENGTH_LONG).show();
+
+                                                                                String res = jsonObject.getString("STATUS");
+                                                                                Toast.makeText(getApplicationContext(), "8", Toast.LENGTH_LONG).show();
+
+                                                                                if (res == "SUCCESS") {
+                                                                                    Toast.makeText(SignupActivity.this, "Got status successfully", Toast.LENGTH_LONG).show();
+                                                                                    session.setLogin(true);
+                                                                                    Intent i = new Intent(SignupActivity.this, HomeScreen.class);
+                                                                                    startActivity(i);
+                                                                                    //finish();
+                                                                                }
+                                                                            } catch (JSONException e) {
+                                                                                e.printStackTrace();
+                                                                                Log.i(" volley Error :",""+e.getMessage());
+
+                                                                                Toast.makeText(SignupActivity.this, "Error getting status", Toast.LENGTH_LONG).show();
+                                                                            }
+                                                                            Toast.makeText(getApplication(), "Stuff uploaded successfully", Toast.LENGTH_SHORT).show();
+                                                                        }
+                                                                    }, new Response.ErrorListener() {
+                                                                @Override
+                                                                public void onErrorResponse(VolleyError volleyError) {
+                                                                    Toast.makeText(SignupActivity.this, "The error is in volley", Toast.LENGTH_LONG).show();
+
+                                                                }
+                                                            });
+
+                                                            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 48,
+                                                                    2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                                                            Volley.newRequestQueue(SignupActivity.this).add(jsonObjectRequest);
+
+
+                                                        } else {
+                                                            Toast.makeText(getApplicationContext(), "Location is null", Toast.LENGTH_LONG).show();
                                                         }
                                                     }
                                                 } catch (JSONException e) {
@@ -594,7 +474,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                                         }, new Response.ErrorListener() {
                                     @Override
                                     public void onErrorResponse(VolleyError error) {
-                                        Toast.makeText(getApplicationContext(),"Error Occured while sending the data1",Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getApplicationContext(), "Error Occured while sending the data1", Toast.LENGTH_LONG).show();
                                         return;
                                     }
                                 });
@@ -608,18 +488,20 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(),"Error Occured while sending the data2",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Error Occured while sending the data2", Toast.LENGTH_LONG).show();
                 return;
             }
         });
         queue.add(req);
     }
+
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(getApplicationContext().CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
+
     LocationListener mLocationListener;
     Location location;
     double longitude;
@@ -630,7 +512,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
     public void checkLocation() {
 
         String serviceString = Context.LOCATION_SERVICE;
-        mLocationManager = (LocationManager)getSystemService(serviceString);
+        mLocationManager = (LocationManager) getSystemService(serviceString);
 
 
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -656,7 +538,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                         }
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(),"Turn On GPS First!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Turn On GPS First!", Toast.LENGTH_SHORT).show();
                     if (isInternetConnected(getApplicationContext())) {
                         if (mLocationManager != null) {
                             location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
@@ -683,7 +565,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
             }
         };
 
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1,mLocationListener);
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
     }
 
 
@@ -704,6 +586,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         }
         return false;
     }
+
     public boolean isGPSEnabled(Context mContext) {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -715,6 +598,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
+
     private String getDateTime() {
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date date = new Date();
@@ -743,27 +627,34 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                 Toast.makeText(SignupActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
             }
 
-        }else {
-            Toast.makeText(SignupActivity.this, "You haven't picked Image",Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(SignupActivity.this, "You haven't picked Image", Toast.LENGTH_LONG).show();
         }
     }
+
     @Override
     public void onLocationChanged(Location location) {
     }
+
     @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {}
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+    }
+
     @Override
-    public void onProviderEnabled(String s) {}
+    public void onProviderEnabled(String s) {
+    }
+
     @Override
-    public void onProviderDisabled(String s) {}
+    public void onProviderDisabled(String s) {
+    }
+
     public Location getLastKnownLocationCustom() {
         locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
         List<String> providers = locationManager.getProviders(true);
         Location bestLocation = null;
-        for (String provider : providers)
-        {
+        for (String provider : providers) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Log.i(SignupActivity.NO_REST,"SENDING NULL TO LOCATION");
+                Log.i(SignupActivity.NO_REST, "SENDING NULL TO LOCATION");
                 return null;
             }
             Location l = locationManager.getLastKnownLocation(provider);
@@ -794,6 +685,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         super.onPause();
 
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
