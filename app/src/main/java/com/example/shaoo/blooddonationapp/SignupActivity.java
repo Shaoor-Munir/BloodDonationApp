@@ -87,8 +87,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
     private ProgressDialog pDialog;
     private JSONParser jsonParser = new JSONParser();
 
-    private LoginData data;
-
 
     private EditText Name;
     private EditText EmailAddress;
@@ -113,10 +111,8 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
     private ImageView img;
     String img_str;
 
-    private SignUpdata sigupData;
 
     private SessionManager session;
-    private SQLiteHandlerClass db;
 
     private CellnoAndMailVerify ClassContainingUrls;
 
@@ -138,7 +134,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         ClassContainingUrls = new CellnoAndMailVerify();
-        data = new LoginData();
 
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -166,11 +161,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         // Session manager
         session = new SessionManager(getApplicationContext());
 
-        //SQLite database handler
-        db = new SQLiteHandlerClass(getApplicationContext());
-
         // creating the JSON object
-
         jsonObj = new JSONObject();
 
         // Check if user is already logged in or not
@@ -327,6 +318,8 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         // checking if the email already exists or not
         String url = ClassContainingUrls.getEmailURL() + EmailInput;
 
+
+
         // Sending the request via the volley
         RequestQueue queue = Volley.newRequestQueue(this);
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -378,90 +371,57 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
                                                                 RequiredGender = "0";
                                                             }
 
-                                                            session.setLogin(true);
-
-                                                            //db.deleteUsers();
-
-                                                            // Adding data to the local db and then setting the session
-
-
-                                                            Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_LONG).show();
-                                                            data.setImage(img_str);
-                                                            data.setName(NameInput);
-                                                            data.setMail(EmailInput);
-                                                            data.setPassword(PasswordInput);
-                                                            data.setContact(ContactInput);
-                                                            data.setCity(CityInput);
-                                                            data.setAge(age);
-                                                            data.setBloodgroup(BloodGroupInput);
-                                                            data.setGender(GenderInput);
-                                                            data.setLongitude(Longitude);
-                                                            data.setLatitude(Latitude);
-                                                        //    db.add_user_data(data);
-                                                            Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_LONG).show();
-
-                                                            try {
-                                                                Toast.makeText(getApplicationContext(), "3", Toast.LENGTH_LONG).show();
-                                                                jsonObj.put("REQUEST_TYPE", "SIGNUP");
-                                                                jsonObj.put("NAME", NameInput);
-                                                                jsonObj.put("EMAIL", EmailInput);
-                                                                jsonObj.put("PASSWORD", PasswordInput);
-                                                                jsonObj.put("AGE", age);
-                                                                jsonObj.put("BLOODGROUP", BloodGroupInput);
-                                                                jsonObj.put("GENDER", GenderInput);
-                                                                jsonObj.put("CONTACT", RequiredGender);
-                                                                jsonObj.put("CITY", CityInput);
-                                                                jsonObj.put("LONGI", Longitude);
-                                                                jsonObj.put("LATI", Latitude);
-                                                                jsonObj.put("AVAILABLE", "1");
-                                                                jsonObj.put("IMAGE", "noimage");
-                                                                Toast.makeText(getApplicationContext(), "4", Toast.LENGTH_LONG).show();
-
-                                                            } catch (JSONException e) {
-                                                                Toast.makeText(SignupActivity.this, "Json object error", Toast.LENGTH_LONG).show();
-                                                            }
-
-                                                            Toast.makeText(getApplicationContext(), "5", Toast.LENGTH_LONG).show();
-                                                            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, ClassContainingUrls.getSIGNUP(), jsonObj,
-                                                                    new Response.Listener<JSONObject>() {
+                                                            // now here sending all the input data to the api
+                                                            // no need to save in the database as it won't be needed in future
+                                                            StringRequest postRequest = new StringRequest(Request.Method.POST, "http://sundarsharif.com/servers/oneblood/servercontroller.php",
+                                                                    new Response.Listener<String>()
+                                                                    {
                                                                         @Override
-                                                                        public void onResponse(JSONObject jsonObject) {
-                                                                            Log.i(" volley response :",""+jsonObject.toString());
-                                                                            Toast.makeText(getApplicationContext(), "6", Toast.LENGTH_LONG).show();
+                                                                        public void onResponse(String response) {
 
-                                                                            try {
-                                                                                Toast.makeText(getApplicationContext(), "7", Toast.LENGTH_LONG).show();
+                                                                            // Checking if the string contains Status =  Success
+                                                                            if(response.contains("SUCCESS")){
 
-                                                                                String res = jsonObject.getString("STATUS");
-                                                                                Toast.makeText(getApplicationContext(), "8", Toast.LENGTH_LONG).show();
 
-                                                                                if (res == "SUCCESS") {
-                                                                                    Toast.makeText(SignupActivity.this, "Got status successfully", Toast.LENGTH_LONG).show();
-                                                                                    session.setLogin(true);
-                                                                                    Intent i = new Intent(SignupActivity.this, HomeScreen.class);
-                                                                                    startActivity(i);
-                                                                                    //finish();
-                                                                                }
-                                                                            } catch (JSONException e) {
-                                                                                e.printStackTrace();
-                                                                                Log.i(" volley Error :",""+e.getMessage());
-
-                                                                                Toast.makeText(SignupActivity.this, "Error getting status", Toast.LENGTH_LONG).show();
+                                                                                session.setLogin(true);
+                                                                                Intent intent = new Intent(SignupActivity.this,HomeScreen.class);
+                                                                                startActivity(intent);
                                                                             }
-                                                                            Toast.makeText(getApplication(), "Stuff uploaded successfully", Toast.LENGTH_SHORT).show();
+                                                                            else {
+                                                                                Toast.makeText(SignupActivity.this,"Response returns Failure",Toast.LENGTH_LONG).show();
+                                                                            }
+
                                                                         }
-                                                                    }, new Response.ErrorListener() {
+                                                                    },
+                                                                    new Response.ErrorListener()
+                                                                    {
+                                                                        @Override
+                                                                        public void onErrorResponse(VolleyError error) {
+                                                                            Toast.makeText(SignupActivity.this,"Again messed up",Toast.LENGTH_LONG).show();
+                                                                        }
+                                                                    }
+                                                            ) {
                                                                 @Override
-                                                                public void onErrorResponse(VolleyError volleyError) {
-                                                                    Toast.makeText(SignupActivity.this, "The error is in volley", Toast.LENGTH_LONG).show();
-
+                                                                protected Map<String, String> getParams()
+                                                                {
+                                                                    Map<String, String> params = new HashMap<String, String>();
+                                                                    params.put("REQUEST_TYPE", "SIGNUP");
+                                                                    params.put("NAME", NameInput);
+                                                                    params.put("EMAIL", EmailInput);
+                                                                    params.put("PASSWORD", PasswordInput);
+                                                                    params.put("AGE", RequiredGender);
+                                                                    params.put("BLOODGROUP", BloodGroupInput);
+                                                                    params.put("GENDER", GenderInput);
+                                                                    params.put("CONTACT", ContactInput);
+                                                                    params.put("CITY", CityInput);
+                                                                    params.put("LONGI", Longitude);
+                                                                    params.put("LATI", Latitude);
+                                                                    params.put("AVAILABLE", "1");
+                                                                    params.put("IMAGE", "noimage");
+                                                                    return params;
                                                                 }
-                                                            });
-
-                                                            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 48,
-                                                                    2, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-                                                            Volley.newRequestQueue(SignupActivity.this).add(jsonObjectRequest);
-
+                                                            };
+                                                            Volley.newRequestQueue(SignupActivity.this).add(postRequest);
 
                                                         } else {
                                                             Toast.makeText(getApplicationContext(), "Location is null", Toast.LENGTH_LONG).show();

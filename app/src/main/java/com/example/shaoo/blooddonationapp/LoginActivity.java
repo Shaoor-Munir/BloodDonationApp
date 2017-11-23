@@ -41,9 +41,7 @@ public class LoginActivity extends AppCompatActivity{
 
     private ProgressDialog pDialog;
     private SessionManager session;
-    private SQLiteHandlerClass db;
     private CellnoAndMailVerify ur;
-    private LoginData data;
     Intent i;
 
 
@@ -67,8 +65,6 @@ public class LoginActivity extends AppCompatActivity{
         pDialog.setCancelable(false);
 
 
-        // SQLite database handler
-        db = new SQLiteHandlerClass(getApplicationContext());
 
 
         // Session manager
@@ -142,25 +138,7 @@ public class LoginActivity extends AppCompatActivity{
                                     return;
                                 }
                                 else {
-                                    data = new LoginData();
-                                    data.setStatus(response.getString("STATUS"));
-                                    data.setMessage(response.getString("MESSEGE"));
-                                    data.setID(response.getString("id"));
-                                    data.setMail(response.getString("email"));
-                                    data.setPassword(response.getString("password"));
-                                    data.setName(response.getString("name"));
-                                    data.setAge(response.getString("age"));
-                                    data.setBloodgroup(response.getString("bloodGroup"));
-                                    data.setGender(response.getString("gender"));
-                                    data.setContact(response.getString("contact"));
-                                    data.setCity(response.getString("city"));
-                                    data.setLongitude(response.getString("longi"));
-                                    data.setLatitude(response.getString("lati"));
-                                    data.setAvailable(response.getString("available"));
-                                    data.setImage(response.getString("image"));
-                                    data.setConclusion(true);
                                     session.setLogin(true);
-                                    db.add_user_data(data);
                                     i = new Intent(getApplicationContext(),HomeScreen.class);
                                     startActivity(i);
                                     finish();

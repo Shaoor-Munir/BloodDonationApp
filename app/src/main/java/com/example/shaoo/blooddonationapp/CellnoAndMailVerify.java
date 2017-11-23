@@ -25,18 +25,3 @@ public class CellnoAndMailVerify {
 }
 
 
-/*
-"&NAME=myName" +
-            "&EMAIL=myEmail" +
-            "&PASSWORD=myPass" +
-            "&AGE=22" +
-            "&BLOODGROUP=ab+" +
-            "&GENDER=1" +
-            "&CONTACT=+9232322323" +
-            "&CITY=Lahore" +
-            "&LONGI=12.2545" +
-            "&LATI=21.3542" +
-            "&AVAILABLE=1" +
-            "&IMAGE=aBase64String";
-
- */
