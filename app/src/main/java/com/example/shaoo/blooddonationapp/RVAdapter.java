@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CardViewHolder>{
     public void onBindViewHolder(CardViewHolder holder, int position) {
         holder.title.setText(data.get(position).title);
         holder.description.setText(data.get(position).description);
-        Picasso.with(context).load(data.get(position).photoID).into(holder.picture);
+        Glide.with(context).load(data.get(position).photoID).into(holder.picture);
     }
 
     @Override

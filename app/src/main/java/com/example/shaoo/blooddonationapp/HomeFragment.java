@@ -119,13 +119,20 @@ public class HomeFragment extends Fragment {
                 }
                 else if(obj.getString("STATUS") == "SUCCESS") {
                     arr = obj.getJSONArray("DATA");
+
+
                     int length = obj.length();
+
                     data = new ArrayList<>();
+
+
+
                     for(int i=0; i<length; i++) {
                         JSONObject jsonObj = arr.getJSONObject(i);
                         String image = jsonObj.getString("image");
                         String heading = jsonObj.getString("heading");
                         String description = jsonObj.getString("description");
+
                         data.add(new CardData(heading,description,image));
                     }
                 }
