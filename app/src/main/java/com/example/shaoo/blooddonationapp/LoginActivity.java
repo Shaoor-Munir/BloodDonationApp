@@ -133,7 +133,7 @@ public class LoginActivity extends AppCompatActivity{
                         public void onResponse(JSONObject response) {
                             try {
 
-                                if(response.getString("STATUS") == "FAIL") {
+                                if(response.getString("STATUS").compareTo("FAIL") == 0) {
                                     Toast.makeText(getApplicationContext(),"Login Information incorrect! Please try again!",Toast.LENGTH_LONG).show();
                                     return;
                                 }
