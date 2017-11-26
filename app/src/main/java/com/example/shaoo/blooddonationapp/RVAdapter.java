@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
@@ -24,6 +25,11 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CardViewHolder>{
     }
     RVAdapter(List<CardData> data, Context context){this.data = data; this.context = context;}
 
+    public void update_data(List <CardData> Data){
+        this.data = data;
+        this.notifyDataSetChanged();
+    }
+
     @Override
     public CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -35,6 +41,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CardViewHolder>{
     public void onBindViewHolder(CardViewHolder holder, int position) {
         holder.title.setText(data.get(position).title);
         holder.description.setText(data.get(position).description);
+      //  Toast.makeText(context,data.get(position).photoID, Toast.LENGTH_SHORT).show();
         Glide.with(context).load(data.get(position).photoID).into(holder.picture);
     }
 
@@ -55,9 +62,9 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CardViewHolder>{
         CardViewHolder(View itemView) {
             super(itemView);
             //cv = (CardView)itemView.findViewById(R.id.home_screen_card);
-            title = (TextView)itemView.findViewById(R.id.card_title);
-            description = (TextView)itemView.findViewById(R.id.card_content);
-            picture = (ImageView)itemView.findViewById(R.id.card_image);
+            title = (TextView) itemView.findViewById(R.id.card_title);
+            description = (TextView) itemView.findViewById(R.id.card_content);
+            picture = (ImageView) itemView.findViewById(R.id.card_image);
         }
     }
 
