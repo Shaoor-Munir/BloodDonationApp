@@ -25,7 +25,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CardViewHolder>{
     }
     RVAdapter(List<CardData> data, Context context){this.data = data; this.context = context;}
 
-    public void update_data(List <CardData> Data){
+    public void update_data(List<CardData> Data) {
         this.data = data;
         this.notifyDataSetChanged();
     }
@@ -41,7 +41,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CardViewHolder>{
     public void onBindViewHolder(CardViewHolder holder, int position) {
         holder.title.setText(data.get(position).title);
         holder.description.setText(data.get(position).description);
-      //  Toast.makeText(context,data.get(position).photoID, Toast.LENGTH_SHORT).show();
+        //  Toast.makeText(context,data.get(position).photoID, Toast.LENGTH_SHORT).show();
         Glide.with(context).load(data.get(position).photoID).into(holder.picture);
     }
 

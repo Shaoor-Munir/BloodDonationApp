@@ -59,14 +59,11 @@ public class HomeFragment extends Fragment {
     private static final String MY = "NOREST";
 
     JSONArray arr;
-
+    JSONObject obj;
     private List<CardData> data;
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    JSONObject obj;
-
     private OnFragmentInteractionListener mListener;
 
     public HomeFragment() {
@@ -104,35 +101,32 @@ public class HomeFragment extends Fragment {
 
                     obj = response;
                     String Res = response.toString();
-                    Log.i(MY,Res);
+                    Log.i(MY, Res);
                     try {
 
                         String result = obj.getString("STATUS");
-                        Toast.makeText(getContext(),"Status Value" + result,Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Status Value" + result, Toast.LENGTH_LONG).show();
 
 
-                        Toast.makeText(getContext(),"Came inside1", LENGTH_LONG).show();
-                        if (obj.getString("STATUS").compareTo("FAIL") == 0 ) {
+                        Toast.makeText(getContext(), "Came inside1", LENGTH_LONG).show();
+                        if (obj.getString("STATUS").compareTo("FAIL") == 0) {
                             Toast.makeText(getContext(), "No quotes Retrieved", LENGTH_LONG).show();
-                        }
-
-
-                        else if (obj.getString("STATUS").compareTo("SUCCESS") == 0 ) {
-                            Toast.makeText(getContext(),"Came inside2", LENGTH_LONG).show();
+                        } else if (obj.getString("STATUS").compareTo("SUCCESS") == 0) {
+                            Toast.makeText(getContext(), "Came inside2", LENGTH_LONG).show();
 
                             arr = obj.getJSONArray("DATA");
                             int length = obj.length();
                             data = new ArrayList<>();
 
                             for (int i = 0; i < length; i++) {
-                                Toast.makeText(getContext(),"Ander aya",Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), "Ander aya", Toast.LENGTH_LONG).show();
                                 JSONObject jsonObj = arr.getJSONObject(i);
                                 String image = jsonObj.getString("image");
-                                Toast.makeText(getContext(),image,Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), image, Toast.LENGTH_LONG).show();
                                 String heading = jsonObj.getString("heading");
-                                Toast.makeText(getContext(),heading,Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), heading, Toast.LENGTH_LONG).show();
                                 String description = jsonObj.getString("description");
-                                Toast.makeText(getContext(),description,Toast.LENGTH_LONG).show();
+                                Toast.makeText(getContext(), description, Toast.LENGTH_LONG).show();
 
                                 data.add(new CardData(heading, description, image));
                             }
