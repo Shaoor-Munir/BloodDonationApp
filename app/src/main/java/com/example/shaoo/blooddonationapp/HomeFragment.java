@@ -57,10 +57,10 @@ public class HomeFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String MY = "NOREST";
+    RVAdapter adapter;
+    ArrayList <CardData> data;
 
     JSONArray arr;
-
-    private List<CardData> data;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -84,74 +84,82 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
+    public ArrayList<CardData> getCardData()
+    {
+        obj = new JSONObject();
+        final ArrayList <CardData> tempdata = new ArrayList<CardData>();
+
+        String url = "http://sundarsharif.com/onbloodtest/servercontroller.php?REQUEST_TYPE=GETQUOTES";
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
+                url, null, new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+
+                obj = response;
+                String Res = response.toString();
+                Log.i(MY,Res);
+                try {
+
+                    String result = obj.getString("STATUS");
+                   // Toast.makeText(getContext(),"Status Value" + result,Toast.LENGTH_LONG).show();
+
+
+                  //  Toast.makeText(getContext(),"Came inside1", LENGTH_LONG).show();
+                    if (obj.getString("STATUS").compareTo("FAIL") == 0 ) {
+
+                        Toast.makeText(getContext(), "No quotes Retrieved", LENGTH_LONG).show();
+                    }
+
+
+                    else if (obj.getString("STATUS").compareTo("SUCCESS") == 0 ) {
+                        //Toast.makeText(getContext(),"Came inside2", LENGTH_LONG).show();
+
+                        arr = obj.getJSONArray("DATA");
+                        int length = obj.length();
+
+
+                        for (int i = 0; i < length-1; i++) {
+                            //Toast.makeText(getContext(),"Ander aya",Toast.LENGTH_LONG).show();
+                            JSONObject jsonObj = arr.getJSONObject(i);
+                            String image = jsonObj.getString("image");
+                            //Toast.makeText(getContext(),image,Toast.LENGTH_LONG).show();
+                            String heading = jsonObj.getString("heading");
+                            //Toast.makeText(getContext(),heading,Toast.LENGTH_LONG).show();
+                            String description = jsonObj.getString("description");
+                           // Toast.makeText(getContext(),description,Toast.LENGTH_LONG).show();
+
+                            tempdata.add(new CardData(heading, description, image));
+                        }
+
+                        adapter.update_data(data);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(),
+                        "Error in volley", Toast.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(jsonObjReq);
+        return tempdata;
+
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-            obj = new JSONObject();
-
-
-            String url = "http://sundarsharif.com/onbloodtest/servercontroller.php?REQUEST_TYPE=GETQUOTES";
-            RequestQueue queue = Volley.newRequestQueue(getContext());
-
-            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
-                    url, null, new Response.Listener<JSONObject>() {
-
-                @Override
-                public void onResponse(JSONObject response) {
-
-                    obj = response;
-                    String Res = response.toString();
-                    Log.i(MY,Res);
-                    try {
-
-                        String result = obj.getString("STATUS");
-                        Toast.makeText(getContext(),"Status Value" + result,Toast.LENGTH_LONG).show();
-
-
-                        Toast.makeText(getContext(),"Came inside1", LENGTH_LONG).show();
-                        if (obj.getString("STATUS").compareTo("FAIL") == 0 ) {
-                            Toast.makeText(getContext(), "No quotes Retrieved", LENGTH_LONG).show();
-                        }
-
-
-                        else if (obj.getString("STATUS").compareTo("SUCCESS") == 0 ) {
-                            Toast.makeText(getContext(),"Came inside2", LENGTH_LONG).show();
-
-                            arr = obj.getJSONArray("DATA");
-                            int length = obj.length();
-                            data = new ArrayList<>();
-
-                            for (int i = 0; i < length; i++) {
-                                Toast.makeText(getContext(),"Ander aya",Toast.LENGTH_LONG).show();
-                                JSONObject jsonObj = arr.getJSONObject(i);
-                                String image = jsonObj.getString("image");
-                                Toast.makeText(getContext(),image,Toast.LENGTH_LONG).show();
-                                String heading = jsonObj.getString("heading");
-                                Toast.makeText(getContext(),heading,Toast.LENGTH_LONG).show();
-                                String description = jsonObj.getString("description");
-                                Toast.makeText(getContext(),description,Toast.LENGTH_LONG).show();
-
-                                data.add(new CardData(heading, description, image));
-                            }
-                        }
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }, new Response.ErrorListener() {
-
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(getContext(),
-                            "Error in volley", Toast.LENGTH_SHORT).show();
-                }
-            });
-            queue.add(jsonObjReq);
 
 
         }
@@ -169,7 +177,9 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rv.setLayoutManager(llm);
 
-        RVAdapter adapter = new RVAdapter(data, getContext());
+        data = getCardData();
+
+        adapter = new RVAdapter(data, getContext());
         rv.setAdapter(adapter);
 
         return HView;
