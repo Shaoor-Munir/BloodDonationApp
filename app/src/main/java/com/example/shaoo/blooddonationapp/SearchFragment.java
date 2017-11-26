@@ -162,8 +162,8 @@ public class SearchFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // checkLocation();
-                Toast.makeText(getContext(), latitude + " : " + longitude, Toast.LENGTH_SHORT).show();
-                JSONParser jsonParser = new JSONParser();
+                //Toast.makeText(getContext(), latitude + " : " + longitude, Toast.LENGTH_SHORT).show();
+                //JSONParser jsonParser = new JSONParser();
                 if (!bloodGroup.equals("Blood Type")) {
 //                    jsonParser.getResponse(CellnoAndMailVerify.getUsersNearby(10, 20, "AN"), getContext(),
 //                            new VolleyCallback() {

@@ -1,4 +1,5 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,7 +12,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_marginTop="32dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_constraintTop_toTopOf="parent">
 
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/EditProfile"
@@ -23,7 +27,8 @@
                 android:clickable="true"
                 android:onClick="EditProfile"
                 android:paddingBottom="10dp"
-                android:text="Edit My Profile"
+                android:text="Edit Profile"
+                android:textColor="@color/blueColor"
                 android:textSize="18sp"
                 tools:ignore="OnClick" />
 
@@ -42,7 +47,9 @@
                 android:clickable="true"
                 android:paddingBottom="10dp"
                 android:text="Privacy Policy"
+                android:textColor="@color/blueColor"
                 android:textSize="18sp" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -58,7 +65,9 @@
                 android:clickable="true"
                 android:paddingBottom="10dp"
                 android:text="Terms of Service"
+                android:textColor="@color/blueColor"
                 android:textSize="18sp" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -74,7 +83,9 @@
                 android:clickable="true"
                 android:paddingBottom="10dp"
                 android:text="Donate A Book"
+                android:textColor="@color/blueColor"
                 android:textSize="18sp" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -89,8 +100,10 @@
                 android:layout_marginTop="12dp"
                 android:clickable="true"
                 android:paddingBottom="10dp"
-                android:text="Log Out"
+                android:text="Logout"
+                android:textColor="@color/blueColor"
                 android:textSize="18sp" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"

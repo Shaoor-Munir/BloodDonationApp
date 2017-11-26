@@ -84,10 +84,16 @@ import static java.security.AccessController.getContext;
 public class SignupActivity extends AppCompatActivity implements android.location.LocationListener {
 
     public static final String NO_REST = "MY";
+    String age;
+    String img_str;
+    String RequiredGender;
+    LocationListener mLocationListener;
+    Location location;
+    double longitude;
+    double latitude;
+    LocationManager mLocationManager;
     private ProgressDialog pDialog;
     private JSONParser jsonParser = new JSONParser();
-
-
     private EditText Name;
     private EditText EmailAddress;
     private EditText Password;
@@ -97,7 +103,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
     private Spinner BloodGroup;
     private Spinner Gender;
     private Button RegisterButton;
-
     private String NameInput;
     private String EmailInput;
     private String PasswordInput;
@@ -106,28 +111,41 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
     private String DateInput;
     private String GenderInput;
     private String BloodGroupInput;
-    String age;
     //for the image manipulation
     private ImageView img;
-    String img_str;
-
-
     private SessionManager session;
-
     private CellnoAndMailVerify ClassContainingUrls;
-
     // variables related to the location thingy
     private LocationManager locationManager;
     private String provider;
-
-
     private String Longitude;
     private String Latitude;
-
-    String RequiredGender;
-
     private JSONObject jsonObj;
 
+    public static boolean isInternetConnected(Context ctx) {
+        ConnectivityManager connectivityMgr = (ConnectivityManager) ctx
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connectivityMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        NetworkInfo mobile = connectivityMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifi != null) {
+            if (wifi.isConnected()) {
+                return true;
+            }
+        }
+        if (mobile != null) {
+            if (mobile.isConnected()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isEmailValid(String email) {
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,7 +197,7 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Clicked back button", Toast.LENGTH_SHORT).show();
+                onBackPressed();
             }
         });
 
@@ -211,7 +229,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
             }
         });
     }
-
 
     public void CheckEverything(View v) throws InterruptedException {
         NameInput = Name.getText().toString().trim();
@@ -462,13 +479,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    LocationListener mLocationListener;
-    Location location;
-    double longitude;
-    double latitude;
-    LocationManager mLocationManager;
-
-
     public void checkLocation() {
 
         String serviceString = Context.LOCATION_SERVICE;
@@ -528,35 +538,9 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
     }
 
-
-    public static boolean isInternetConnected(Context ctx) {
-        ConnectivityManager connectivityMgr = (ConnectivityManager) ctx
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifi = connectivityMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        NetworkInfo mobile = connectivityMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (wifi != null) {
-            if (wifi.isConnected()) {
-                return true;
-            }
-        }
-        if (mobile != null) {
-            if (mobile.isConnected()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public boolean isGPSEnabled(Context mContext) {
         LocationManager locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-    }
-
-    public static boolean isEmailValid(String email) {
-        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
-        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
     }
 
     private String getDateTime() {

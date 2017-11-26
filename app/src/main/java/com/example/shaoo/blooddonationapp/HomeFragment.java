@@ -53,14 +53,11 @@ public class HomeFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     JSONArray arr;
-
+    JSONObject obj;
     private List<CardData> data;
-
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    JSONObject obj;
-
     private OnFragmentInteractionListener mListener;
 
     public HomeFragment() {
@@ -98,7 +95,7 @@ public class HomeFragment extends Fragment {
 
                     obj = response;
                     String Res = response.toString();
-                    Toast.makeText(getContext(),Res,Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(),Res,Toast.LENGTH_LONG).show();
 
                 }
             }, new Response.ErrorListener() {

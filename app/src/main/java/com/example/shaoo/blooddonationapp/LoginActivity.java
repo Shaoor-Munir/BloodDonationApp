@@ -33,20 +33,13 @@ import java.util.List;
 public class LoginActivity extends AppCompatActivity{
 
     private final String APP = "MY1";
-
+    Intent i;
     private EditText email;
     private EditText password;
-
     private JSONParser jsonParser=new JSONParser();
-
     private ProgressDialog pDialog;
     private SessionManager session;
     private CellnoAndMailVerify ur;
-    Intent i;
-
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +49,8 @@ public class LoginActivity extends AppCompatActivity{
         // getting the variables from the input
         email = (EditText) findViewById(R.id.emailI);
         password = (EditText) findViewById(R.id.passwordI);
+        email.setText("jamshaidsohail@gmail.com");
+        password.setText("91799674");
         ur = new CellnoAndMailVerify();
 
 
@@ -89,7 +84,7 @@ public class LoginActivity extends AppCompatActivity{
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(),"Clicked back button",Toast.LENGTH_SHORT).show();
+                onBackPressed();
             }
         });
     }
@@ -127,17 +122,33 @@ public class LoginActivity extends AppCompatActivity{
 
 
             RequestQueue queue = Volley.newRequestQueue(this);
-            JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET,url,null,
+            final JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
                             try {
 
+                                Toast.makeText(getApplicationContext(), response.toString(), Toast.LENGTH_LONG).show();
                                 if(response.getString("STATUS") == "FAIL") {
                                     Toast.makeText(getApplicationContext(),"Login Information incorrect! Please try again!",Toast.LENGTH_LONG).show();
                                     return;
                                 }
                                 else {
+
+                                    String name = response.getString("name");
+                                    String number = response.getString("contact");
+                                    String city = response.getString("city");
+                                    String bloodgroup = response.getString("bloodGroup");
+                                    String email = response.getString("email");
+                                    String password = response.getString("password");
+                                    String age = response.getString("age");
+                                    String gender = response.getString("gender");
+                                    String longitude = response.getString("longi");
+                                    String latitude = response.getString("lati");
+                                    String image = response.getString("image");
+                                    if (bloodgroup.equals("Mal"))
+                                        bloodgroup = "BP";
+                                    session.setCredentials(email, password, age, gender, latitude, longitude, name, number, city, bloodgroup, image);
                                     session.setLogin(true);
                                     i = new Intent(getApplicationContext(),HomeScreen.class);
                                     startActivity(i);

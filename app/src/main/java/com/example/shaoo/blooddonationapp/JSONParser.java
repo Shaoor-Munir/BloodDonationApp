@@ -126,7 +126,11 @@ public class JSONParser {
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                callback.onSuccessResponse(response);
+                try {
+                    callback.onSuccessResponse(response);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         },
                 new Response.ErrorListener() {
