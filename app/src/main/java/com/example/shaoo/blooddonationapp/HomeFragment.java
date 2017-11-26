@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,30 +28,35 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.widget.Toast.LENGTH_LONG;
 
-class CardData{
+
+class CardData {
     String title;
     String description;
     String photoID;
 
-    CardData(String title, String description, String photoID)
-    {
+    CardData(String title, String description, String photoID) {
         this.title = title;
         this.description = description;
         this.setPhotoID(photoID);
     }
-public String getPhotoID() {
-    return photoID;
+
+    public String getPhotoID() {
+        return photoID;
+    }
+
+    public void setPhotoID(String photoID) {
+        this.photoID = photoID;
+    }
 }
-public void setPhotoID(String photoID) {
-    this.photoID = photoID;
-}}
 
 public class HomeFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String MY = "NOREST";
 
     JSONArray arr;
 
@@ -87,7 +93,7 @@ public class HomeFragment extends Fragment {
             obj = new JSONObject();
 
 
-            String url ="http://sundarsharif.com/onbloodtest/servercontroller.php?REQUEST_TYPE=GETQUOTES";
+            String url = "http://sundarsharif.com/onbloodtest/servercontroller.php?REQUEST_TYPE=GETQUOTES";
             RequestQueue queue = Volley.newRequestQueue(getContext());
 
             JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.GET,
@@ -98,7 +104,43 @@ public class HomeFragment extends Fragment {
 
                     obj = response;
                     String Res = response.toString();
-                    Toast.makeText(getContext(),Res,Toast.LENGTH_LONG).show();
+                    Log.i(MY,Res);
+                    try {
+
+                        String result = obj.getString("STATUS");
+                        Toast.makeText(getContext(),"Status Value" + result,Toast.LENGTH_LONG).show();
+
+
+                        Toast.makeText(getContext(),"Came inside1", LENGTH_LONG).show();
+                        if (obj.getString("STATUS").compareTo("FAIL") == 0 ) {
+                            Toast.makeText(getContext(), "No quotes Retrieved", LENGTH_LONG).show();
+                        }
+
+
+                        else if (obj.getString("STATUS").compareTo("SUCCESS") == 0 ) {
+                            Toast.makeText(getContext(),"Came inside2", LENGTH_LONG).show();
+
+                            arr = obj.getJSONArray("DATA");
+                            int length = obj.length();
+                            data = new ArrayList<>();
+
+                            for (int i = 0; i < length; i++) {
+                                Toast.makeText(getContext(),"Ander aya",Toast.LENGTH_LONG).show();
+                                JSONObject jsonObj = arr.getJSONObject(i);
+                                String image = jsonObj.getString("image");
+                                Toast.makeText(getContext(),image,Toast.LENGTH_LONG).show();
+                                String heading = jsonObj.getString("heading");
+                                Toast.makeText(getContext(),heading,Toast.LENGTH_LONG).show();
+                                String description = jsonObj.getString("description");
+                                Toast.makeText(getContext(),description,Toast.LENGTH_LONG).show();
+
+                                data.add(new CardData(heading, description, image));
+                            }
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
                 }
             }, new Response.ErrorListener() {
@@ -112,33 +154,6 @@ public class HomeFragment extends Fragment {
             queue.add(jsonObjReq);
 
 
-           //Parsing the json response and rendering it on the screen
-            try {
-                if(obj.getString("STATUS") == "FAIL"){
-                    Toast.makeText(getContext(),"No quotes Retrieved",Toast.LENGTH_LONG).show();
-                }
-                else if(obj.getString("STATUS") == "SUCCESS") {
-                    arr = obj.getJSONArray("DATA");
-
-
-                    int length = obj.length();
-
-                    data = new ArrayList<>();
-
-
-
-                    for(int i=0; i<length; i++) {
-                        JSONObject jsonObj = arr.getJSONObject(i);
-                        String image = jsonObj.getString("image");
-                        String heading = jsonObj.getString("heading");
-                        String description = jsonObj.getString("description");
-
-                        data.add(new CardData(heading,description,image));
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -149,7 +164,7 @@ public class HomeFragment extends Fragment {
         final View HView = inflater.inflate(R.layout.fragment_home, container, false);
 
 
-        RecyclerView rv = (RecyclerView)HView.findViewById(R.id.home_rv);
+        RecyclerView rv = (RecyclerView) HView.findViewById(R.id.home_rv);
 
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         rv.setLayoutManager(llm);
