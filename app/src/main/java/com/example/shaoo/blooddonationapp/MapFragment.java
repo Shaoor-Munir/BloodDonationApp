@@ -119,46 +119,66 @@ public class MapFragment extends Fragment {
                 googleMap = mMap;
                 int count = 0;
                 for (Map<String, Object> map : SearchFragment.userList) {
-                    double longitude = Double.parseDouble((String) map.get("longitude"));
-                    double latitude = Double.parseDouble((String) map.get("latitude"));
+                    double longitude = (double) map.get("longitude");
+                    double latitude = (double) map.get("latitude");
                     Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromResource(R.drawable.blood)));
-                    marker.setTag(count);
+                    marker.setTag("UR " + count);
                     count++;
                 }
-                LatLng coordinate = new LatLng(21.3, 12.2);
-                CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 8);
+                count = 0;
+                for (Map<String, Object> map : SearchFragment.BBList) {
+                    double longitude = (double) map.get("longitude");
+                    double latitude = (double) map.get("latitude");
+                    Marker marker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).icon(BitmapDescriptorFactory.fromResource(R.drawable.hospital)));
+                    marker.setTag("BB " + count);
+                    count++;
+                }
+                LatLng coordinate = new LatLng(LauncherActivity.latitude, LauncherActivity.longitude);
+                CameraUpdate yourLocation = CameraUpdateFactory.newLatLngZoom(coordinate, 10);
                 mMap.animateCamera(yourLocation);
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
-                        int position = (int) (marker.getTag());
-                        String name = (String) SearchFragment.userList.get(position).get("name");
-                        String age = (String) SearchFragment.userList.get(position).get("age");
-                        String gender = (String) SearchFragment.userList.get(position).get("gender");
-                        String bgroup = (String) SearchFragment.userList.get(position).get("bloodGroup");
-                        String address = (String) SearchFragment.userList.get(position).get("city");
-                        String contct = (String) SearchFragment.userList.get(position).get("contact");
-                        String email = (String) SearchFragment.userList.get(position).get("email");
-                        Bitmap image = (Bitmap) SearchFragment.userList.get(position).get("image");
+                        String[] str = marker.getTag().toString().split(" ");
+                        int position = Integer.parseInt(str[1]);
+                        String name = null, bgroup = null, address = null, contct = null, city = null, title = null, addr = null;
+                        //Bitmap image;
+                        if (str[0].equals("UR")) {
+                            name = SearchFragment.userList.get(position).get("name").toString();
+                            bgroup = SearchFragment.userList.get(position).get("bloodGroup").toString();
+                            address = SearchFragment.userList.get(position).get("gender").toString().equals("1") ? "Male" : "Female";
+                            contct = SearchFragment.userList.get(position).get("contact").toString();
+                            city = SearchFragment.userList.get(position).get("city").toString();
+                            addr = "Gender : ";
+                            title = "Blood Doner";
+                            //image = (Bitmap) SearchFragment.userList.get(position).get("image");
+                        } else if (str[0].equals("BB")) {
+                            name = SearchFragment.BBList.get(position).get("BankName").toString();
+                            bgroup = SearchFragment.BBList.get(position).get("bloodGroup").toString();
+                            address = SearchFragment.BBList.get(position).get("bankAddress").toString();
+                            contct = SearchFragment.BBList.get(position).get("bankContact").toString();
+                            city = SearchFragment.BBList.get(position).get("bankCity").toString();
+                            title = "BloodBank";
+                            addr = "Address : ";
+                            //image = (Bitmap) SearchFragment.userList.get(position).get("image");
+                        }
                         LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                         View view = layoutInflater.inflate(R.layout.donor_detail, null);
                         TextView nameTXT = (TextView) view.findViewById(R.id.nameTXT);
-                        TextView ageTXT = (TextView) view.findViewById(R.id.ageTXT);
-                        TextView genderTXT = (TextView) view.findViewById(R.id.genderTXT);
                         TextView bgroupTXT = (TextView) view.findViewById(R.id.bgroupTXT);
                         TextView addressTXT = (TextView) view.findViewById(R.id.addressTXT);
+                        TextView AddrTXT = (TextView) view.findViewById(R.id.Addr);
                         TextView contactTXT = (TextView) view.findViewById(R.id.contactTXT);
-                        TextView emailTXT = (TextView) view.findViewById(R.id.emailTXT);
+                        TextView cityTXT = (TextView) view.findViewById(R.id.cityTXT);
                         ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
                         nameTXT.setText(name);
-                        ageTXT.setText(age);
-                        genderTXT.setText(gender);
                         bgroupTXT.setText(bgroup);
                         addressTXT.setText(address);
+                        AddrTXT.setText(addr);
                         contactTXT.setText(contct);
-                        emailTXT.setText(email);
-                        imageView.setImageBitmap(image);
-                        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).setIcon(R.drawable.blood).setTitle("Blood Doner Detail")
+                        cityTXT.setText(city);
+                        //imageView.setImageBitmap(image);
+                        AlertDialog alertDialog = new AlertDialog.Builder(getContext()).setIcon(R.drawable.blood).setTitle(title + " Detail")
                                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -177,24 +197,6 @@ public class MapFragment extends Fragment {
                 });
 
 
-//                googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-//                    @Override
-//                    public void onInfoWindowClick(Marker marker) {
-//                        //markerClicked(marker);
-//                        Toast.makeText(getContext(), "The marker is clicked.", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//
-//                });
-
-                // For showing a move to my location button
-                // googleMap.setMyLocationEnabled(true);
-
-                // For dropping a marker at a point on the Map
-                //addMarkers();
-                // For zooming automatically to the location of the marker
-                //CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
-                //googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
         });
         return view;

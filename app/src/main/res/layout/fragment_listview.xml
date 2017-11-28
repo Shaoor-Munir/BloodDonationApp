@@ -6,6 +6,8 @@
     tools:context="com.example.shaoo.blooddonationapp.ListviewFragment">
 
     <!-- TODO: Update blank fragment layout -->
+
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,6 +20,28 @@
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="250dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#FF909090" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="serif"
+        android:text="Blood Bank List"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="24sp" />
+    <ListView
+        android:id="@+id/listView2"
+        android:layout_width="match_parent"
+        android:layout_height="250dp">
+
+
+    </ListView>
 
 </LinearLayout>

@@ -204,13 +204,8 @@ public class HomeScreen extends AppCompatActivity implements OnFragmentInteracti
                 jsonParser.getResponse(update_url, HomeScreen.this,
                         new VolleyCallback() {
                             @Override
-                            public void onSuccessResponse(String result) throws JSONException {
-                                JSONObject response = null;
-                                try {
-                                    response = new JSONObject(result);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+                            public void onSuccessResponse(JSONObject response) throws JSONException {
+                                //JSONObject response=new JSONObject(result);
                                 //Toast.makeText(getApplicationContext(),result.toString(),Toast.LENGTH_SHORT).show();
                                 if (response.getString("STATUS").equals("SUCCESS"))
                                     Toast.makeText(getApplicationContext(), "Information has been successfully updated", Toast.LENGTH_SHORT).show();

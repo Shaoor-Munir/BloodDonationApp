@@ -31,6 +31,9 @@
             android:label="@string/title_activity_home_screen" />
 
         <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCC-dnLaK00EGW9zokmEg0o6FYpVBFbbgM" />
 

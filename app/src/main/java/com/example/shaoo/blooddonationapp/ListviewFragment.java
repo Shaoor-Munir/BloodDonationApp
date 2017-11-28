@@ -79,39 +79,85 @@ public class ListviewFragment extends Fragment {
         // Inflate the layout for this fragment
         View view1 = inflater.inflate(R.layout.fragment_listview, container, false);
         ListView listView = (ListView) view1.findViewById(R.id.listView1);
+        ListView listView2 = (ListView) view1.findViewById(R.id.listView2);
         SimpleAdapter simpleAdapter = new SimpleAdapter(getContext(), SearchFragment.userList, R.layout.result_listview, new String[]{"name", "city", "contact", "image"}, new int[]{R.id.name, R.id.address, R.id.contact, R.id.imageView});
         listView.setAdapter(simpleAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view2, int position, long id) {
                 Map<String, String> map = (Map) parent.getItemAtPosition(position);
-                String name = (String) SearchFragment.userList.get(position).get("name");
-                String age = (String) SearchFragment.userList.get(position).get("age");
-                String gender = (String) SearchFragment.userList.get(position).get("gender");
-                String bgroup = (String) SearchFragment.userList.get(position).get("bloodGroup");
-                String address = (String) SearchFragment.userList.get(position).get("city");
-                String contct = (String) SearchFragment.userList.get(position).get("contact");
-                String email = (String) SearchFragment.userList.get(position).get("email");
-                Bitmap image = (Bitmap) SearchFragment.userList.get(position).get("image");
+                String name = SearchFragment.userList.get(position).get("name").toString();
+                String bgroup = SearchFragment.userList.get(position).get("bloodGroup").toString();
+                String address = SearchFragment.userList.get(position).get("gender").toString().equals("1") ? "Male" : "Female";
+                String contct = SearchFragment.userList.get(position).get("contact").toString();
+                String city = SearchFragment.userList.get(position).get("city").toString();
+                String title = "Blood Doner";
+                String addr = "Gender : ";
+                //image = (Bitmap) SearchFragment.userList.get(position).get("image");
+
                 LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View view = layoutInflater.inflate(R.layout.donor_detail, null);
                 TextView nameTXT = (TextView) view.findViewById(R.id.nameTXT);
-                TextView ageTXT = (TextView) view.findViewById(R.id.ageTXT);
-                TextView genderTXT = (TextView) view.findViewById(R.id.genderTXT);
                 TextView bgroupTXT = (TextView) view.findViewById(R.id.bgroupTXT);
+                TextView addrs = (TextView) view.findViewById(R.id.Addr);
                 TextView addressTXT = (TextView) view.findViewById(R.id.addressTXT);
                 TextView contactTXT = (TextView) view.findViewById(R.id.contactTXT);
-                TextView emailTXT = (TextView) view.findViewById(R.id.emailTXT);
-                ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
+                TextView cityTXT = (TextView) view.findViewById(R.id.cityTXT);
+                //ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
                 nameTXT.setText(name);
-                ageTXT.setText(age);
-                genderTXT.setText(gender);
                 bgroupTXT.setText(bgroup);
                 addressTXT.setText(address);
                 contactTXT.setText(contct);
-                emailTXT.setText(email);
-                imageView.setImageBitmap(image);
-                AlertDialog alertDialog = new AlertDialog.Builder(getContext()).setIcon(R.drawable.blood).setTitle("Blood Doner Detail")
+                cityTXT.setText(city);
+                addrs.setText(addr);
+                //imageView.setImageBitmap(image);
+                AlertDialog alertDialog = new AlertDialog.Builder(getContext()).setIcon(R.drawable.blood).setTitle(title + " Detail")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                            }
+                        }).setView(view).create();
+                alertDialog.show();
+            }
+        });
+        SimpleAdapter simpleAdapter1 = new SimpleAdapter(getContext(), SearchFragment.BBList, R.layout.result_listview, new String[]{"BankName", "bankCity", "bankContact"}, new int[]{R.id.name, R.id.address, R.id.contact});
+        listView2.setAdapter(simpleAdapter1);
+        listView2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view2, int position, long id) {
+                Map<String, String> map = (Map) parent.getItemAtPosition(position);
+                String name = SearchFragment.BBList.get(position).get("BankName").toString();
+                String bgroup = SearchFragment.BBList.get(position).get("bloodGroup").toString();
+                String address = SearchFragment.BBList.get(position).get("bankAddress").toString();
+                String contct = SearchFragment.BBList.get(position).get("bankContact").toString();
+                String city = SearchFragment.BBList.get(position).get("bankCity").toString();
+                String title = "Blood Bank";
+                String addr = "Address : ";
+                //image = (Bitmap) SearchFragment.userList.get(position).get("image");
+
+                LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View view = layoutInflater.inflate(R.layout.donor_detail, null);
+                TextView nameTXT = (TextView) view.findViewById(R.id.nameTXT);
+                TextView bgroupTXT = (TextView) view.findViewById(R.id.bgroupTXT);
+                TextView Addr = (TextView) view.findViewById(R.id.Addr);
+                TextView addressTXT = (TextView) view.findViewById(R.id.addressTXT);
+                TextView contactTXT = (TextView) view.findViewById(R.id.contactTXT);
+                TextView cityTXT = (TextView) view.findViewById(R.id.cityTXT);
+                //ImageView imageView = (ImageView) view.findViewById(R.id.imageView);
+                nameTXT.setText(name);
+                bgroupTXT.setText(bgroup);
+                addressTXT.setText(address);
+                contactTXT.setText(contct);
+                cityTXT.setText(city);
+                Addr.setText(addr);
+                //imageView.setImageBitmap(image);
+                AlertDialog alertDialog = new AlertDialog.Builder(getContext()).setIcon(R.drawable.blood).setTitle(title + " Detail")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

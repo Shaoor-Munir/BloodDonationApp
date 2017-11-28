@@ -25,6 +25,7 @@ public class CellnoAndMailVerify {
     public String getUpdateURL() {
         return UPDATE;
     }
+
     //public String getSIGNUP() {return SIGNUP;}
 }
 
