@@ -173,7 +173,6 @@ public class SignupActivity extends AppCompatActivity implements android.locatio
         Gender = (Spinner) findViewById(R.id.genderSpinner);
         BloodGroup = (Spinner) findViewById(R.id.bloodSpinner);
         RegisterButton = (Button) findViewById(R.id.appCompatButton2);
-        img = (ImageView) findViewById(R.id.Profile);
 
 
         // Session manager

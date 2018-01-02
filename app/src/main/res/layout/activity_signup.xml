@@ -226,22 +226,6 @@
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/Profile"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_account_circle_black_48dp" />
-
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@color/colorPrimary"
-            android:text="Select profile picture"
-            android:textColor="@android:color/white"
-            android:onClick="LoadImage"/>
-
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -161,7 +161,6 @@ public class HomeScreen extends AppCompatActivity implements OnFragmentInteracti
         final EditText city = (EditText) dialogView.findViewById(R.id.EditCityField);
         final EditText number = (EditText) dialogView.findViewById(R.id.EditNumberField);
         final Spinner bloodType = (Spinner) dialogView.findViewById(R.id.EditBloodType);
-        profile = (CircleImageView) dialogView.findViewById(R.id.EditProfilePicture);
 
         name.setText(sessionManager.getName());
         city.setText(sessionManager.getCity());
